@@ -3,7 +3,7 @@ body {
 	margin: 0;
 	padding: 0;
 	background-color: #cccccc;
-	background-image: url('/static/img/rti_background.png');
+	/* background-image: url('/static/img/rti_background.png'); */
 }
 
 /* scaling of the graph background image needs improvement */
@@ -21,6 +21,11 @@ canvas {
 	font-size: 40px;
 	color: orange;
 	justify: left;
+}
+
+.heartInfoDisplayText{
+	font-size: 40px;
+	font-weight:normal;
 }
 
 div.centered

@@ -3,32 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <title>Heartbeat 10 per Second</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}" >
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
+    <link href="/static/img/favicon.ico" rel="icon" type="image/x-icon">
+    <link href="/static/css/main.css" rel="stylesheet" type="text/css"  >
 </head>
 
-<table width="200" style="margin-left:auto;margin-right:auto">
-  <tr>
-	  <td style="font:Georgia" >Heartbeat</td>
-    <td style="font-family:monospace;" id="idt01" align="right" >100</td>
-  </tr>
+<!-- 2x3 Table holds Rti logo, blank, Heartbeat
+                     blank     blank, Heartrate
+-->
+<table width=100% style="margin-left:auto;margin-right:auto">
+    <tr>
+        <td style="background-color:black;width:25%">
+            <img src="/static/img/RTI_Logo_RGB-Color.png" width="40%" height="40%">
+            <img src="/static/img/heartbeat.png" width="40%" hight="40%">
+        </td>
+        <td style="width:5%; background-color:black"></td>
+        <td style="background-color:black">
+            <div class="text-left">
+                <span class="heartInfoDisplayText" style="color:orange">
+                <div style="font-weight:normal; display:inline-block;"> Heartbeat: </div>
+                <div id="heartbeatValue" style="font-family:monospace; display:inline-block;"> 100 </div>
+                </span>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td>
+            <div class="text-left">
+                <span class="heartInfoDisplayText" style="color:blue">
+                    <div style="display:inline-block;"> Heartrate: </div>
+                    <div id="heartrateValue" style="font-family:monospace; display:inline-block; "> 100 </div>
+                </span>
+            </div>
+        </td>
+    </tr>
 </table>
-
-<div class="text-center">
-    <h1 style="font-weight: normal; display:inline-block;" > Heartrate: </h1>
-    <span style="font-family:monospace; display:inline-block; font-weight:bold;">
-      <h1 id="id01"> 100 </h1>
-    </span>
-</div>
-
 
 <div class="container">
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <canvas id="canvas" style="background-image: url('img/10rti_background.jpg'); background-size: 100% 100%;"></canvas>
+                    <canvas id="canvas" >
+	                 </canvas>
                 </div>
             </div>
         </div>
@@ -42,36 +62,40 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
 <script>
     $(document).ready(function () {
-        const config = {
+      const config = {
             type: 'line',
             data: {
                 labels: [],
                 datasets: [{
-                    label: "Pulse Dataset",
+                    label: "Pulse",
+                    backgroundColor: 'rgb(255, 99, 132)',
                     borderColor: 'rgb(255, 99, 132)',
                     data: [],
                     fill: false,
                 }],
             },
             options: {
-		backgroundCOlor: "transparent",
                 title: {
-                    display: true,
+                    display: false,
                     text: 'Pulse Graph',
+                },
+                legend: {
+                    display: false
                 },
                 scales: {
                     xAxes: [{
-                        display: true,
+                        display: false,
+                        ticks: {display: false},
                         scaleLabel: {
                             display: false,
                             labelString: 'Time'
                         }
                     }],
                     yAxes: [{
-			ticks: { min: 0, max: 100, stepSize:10 },
-                        display: true,
+                        display: false,
+			            ticks: { min: 0, max: 100, stepSize:10, display: false },
                         scaleLabel: {
-                            display: true,
+                            display: false,
                             labelString: 'Value'
                         }
                     }]
@@ -84,7 +108,7 @@
         const lineChart = new Chart(context, config);
 
         const source = new EventSource("/chart-data-10-per-second");
-	const x_point_count = 50;
+	    const x_point_count = 50;
 
         source.onmessage = function (event) {
             const data = JSON.parse(event.data);
@@ -92,11 +116,11 @@
                 config.data.labels.shift();
                 config.data.datasets[0].data.shift();
             }
-   	    var value = ('vvvv'+data.value.toFixed(2)).slice(-6);
-	    var element = document.getElementById("id01");
-		element.innerHTML = value;
-	    var elementT = document.getElementById("idt01");
-		elementT.innerHTML = value;
+   	    var value = (data.value.toFixed(2)).slice(-6);
+	    var elementHr = document.getElementById("heartrateValue");
+		elementHr.innerHTML = value;
+	    var elementHb = document.getElementById("heartbeatValue");
+		elementHb.innerHTML = value;
             config.data.labels.push(data.time);
             config.data.datasets[0].data.push(data.value);
             lineChart.update();
