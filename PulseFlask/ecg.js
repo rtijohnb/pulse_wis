@@ -15,6 +15,22 @@ var rti = rti || {};
  * @namespace rti.ecg
  */
 rti.ecg = {
+
+    /**
+     * Sets up a new chart. This method
+     * needs to be called before reading or drawing ecg info.
+     */
+    setupScenario: function() {
+        rti.shapesdemo.canvas = new fabric.Canvas(
+            'shapesDemoCanvas',
+            {
+                hoverCursor: 'pointer',
+                perPixelTargetFind: true,
+                targetFindTolerance: 5,
+                backgroundImage: '../../../../resources/img/rti_background.png'
+            }
+        );
+    },
     /**
      *  The method will call the methods that update the display at 33 ms intervals.
      */
