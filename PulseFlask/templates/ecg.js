@@ -17,19 +17,53 @@ var rti = rti || {};
 rti.ecg = {
 
     /**
-     * Sets up a new chart. This method
-     * needs to be called before reading or drawing ecg info.
+     * Sets up a new chart. This method needs to be called before reading or drawing ecg info.
      */
     setupScenario: function() {
-        rti.shapesdemo.canvas = new fabric.Canvas(
-            'shapesDemoCanvas',
-            {
-                hoverCursor: 'pointer',
-                perPixelTargetFind: true,
-                targetFindTolerance: 5,
-                backgroundImage: '../../../../resources/img/rti_background.png'
+          const config = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: "Pulse",
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: [],
+                    fill: false,
+                }],
+            },
+            options: {
+                title: {
+                    display: false,
+                    text: 'Pulse Graph',
+                },
+                legend: {
+                    display: false
+                },
+                scales: {
+                    xAxes: [{
+                        display: false,
+                        ticks: {display: false},
+                        scaleLabel: {
+                            display: false,
+                            labelString: 'Time'
+                        }
+                    }],
+                    yAxes: [{
+                        display: false,
+			            ticks: { min: 0, max: 100, stepSize:10, display: false },
+                        scaleLabel: {
+                            display: false,
+                            labelString: 'Value'
+                        }
+                    }]
+                }
             }
-        );
+        };
+
+        const context = document.getElementById('canvas').getContext('2d');
+
+        const lineChart = new Chart(context, config);
     },
     /**
      *  The method will call the methods that update the display at 33 ms intervals.
@@ -75,7 +109,6 @@ rti.ecg = {
                     rti.ecg.updateBpm(data, "ecgBpm"); /* Bpm topic name */
                 }
             );
-
     },
 ​
     /**
