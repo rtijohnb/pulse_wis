@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 from datetime import datetime
+from itertools import cycle
 import json
 import random
 import socket
@@ -20,33 +21,46 @@ def index():
 def chart1():
     return render_template('chart-data-1-per-second.html')
 
-@application.route('/chart10')
-def chart10():
-    return render_template('chart-data-10-per-second.html')
+@application.route('/chart60')
+def chart60():
+    return render_template('chart-data-60-per-second.html')
 
 @application.route('/chart100')
 def chart100():
     return render_template('chart-data-100-per-second.html')
 
+@application.route('/history')
+def history():
+    return render_template('history-chart.html')
+
 ### Data synthesis ###
-hb_values = [
-    40, 48, 50, 48, 51, 55, 57, 60, 63, 70, 77, 85, 95,
-    85, 77, 70, 63, 60, 57, 55, 51, 48, 40
-]
-def generate_hb(sleep_interval):
+def generate_ecg(sleep_interval):
     """generator for heartbeat data"""
-    ix = 0
-    while True:
-        time_now = datetime.now()
-        time_val = time_now.strftime('%M:%S')
+    hb_values = []
+    with open('ecg_dataAll.txt', 'r') as ecg:
+        for row in ecg:
+            hb_values.append(float(row))
+    for item in cycle(hb_values):
         json_data = json.dumps({
-            'time': time_val,
-            'value': hb_values[ix]
+            'value': item 
         })
         yield f"data:{json_data}\n\n"
-        ix += 1
-        if ix >= len(hb_values):
-            ix = 0
+        time.sleep(sleep_interval)
+### Data synthesis ###
+def generate_hb(sleep_interval):
+    """generator for heartbeat data - single file, not used"""
+    hb_values = {}
+    with open('ecg_data01.txt', 'r') as ecg:
+        next(ecg); next(ecg)
+        for row in ecg:
+            one, two = row.split()
+            hb_values[one] = two
+    for item in cycle(hb_values.items()):
+        json_data = json.dumps({
+            'time': item[0],
+            'value': float(item[1]) 
+        })
+        yield f"data:{json_data}\n\n"
         time.sleep(sleep_interval)
 
 def generate_random_data(sleep_interval):
@@ -58,8 +72,8 @@ def generate_random_data(sleep_interval):
         else:
             time_val = time_now.strftime('%M:%S:%f')[:-3]
         json_data = json.dumps({
-            'time': time_val,
-            'value': random.random() * 100
+            #'time': time_val,
+            'value': (random.random() * 100) - 50
         })
         yield f"data:{json_data}\n\n"
         time.sleep(sleep_interval)
@@ -69,13 +83,17 @@ def generate_random_data(sleep_interval):
 def chart_data_1_per_sec():
     return Response(generate_random_data(1), mimetype='text/event-stream')
 
-@application.route('/chart-data-10-per-second')
-def chart_data_10_per_sec():
-    return Response(generate_hb(0.10), mimetype='text/event-stream')
+@application.route('/chart-data-60-per-second')
+def chart_data_60_per_sec():
+    return Response(generate_ecg(0.0166666), mimetype='text/event-stream')
 
 @application.route('/chart-data-100-per-second')
 def chart_data_100_per_sec():
-    return Response(generate_random_data(0.040), mimetype='text/event-stream')
+    return Response(generate_random_data(0.01), mimetype='text/event-stream')
+
+@application.route('/history-response')
+def history_response():
+    return Response(generate_random_data(0.010), mimetype='text/event-stream')
 
 ### Command line ###
 def get_ip():
@@ -107,7 +125,6 @@ def process_args():
     
 if __name__ == '__main__':
     args = process_args()
-    #print(f"starting on {args.host}:{args.port}")
     application.run(host=args.host, port=args.port, debug=True, threaded=True)
 
 
