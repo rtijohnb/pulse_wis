@@ -2,33 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Heartbeat 10 per Second</title>
+    <title>Heartbeat 60 per Second</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}" >
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 
-<table width="200" style="margin-left:auto;margin-right:auto">
+<table width="330" style="margin-left:auto;margin-right:auto">
   <tr>
-	  <td style="font:Georgia" >Heartbeat</td>
+    <td style="font:Georgia" id="idtlabel1">Heartbeat</td>
     <td style="font-family:monospace;" id="idt01" align="right" >100</td>
   </tr>
 </table>
-
-<div class="text-center">
-    <h1 style="font-weight: normal; display:inline-block;" > Heartrate: </h1>
-    <span style="font-family:monospace; display:inline-block; font-weight:bold;">
-      <h1 id="id01"> 100 </h1>
-    </span>
-</div>
-
 
 <div class="container">
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <canvas id="canvas" style="background-image: url('img/10rti_background.jpg'); background-size: 100% 100%;"></canvas>
+                    <canvas id="canvas" style="background-image: url('img/rti_background.jpg'); background-size: 100% 100%;"></canvas>
                 </div>
             </div>
         </div>
@@ -45,33 +38,36 @@
         const config = {
             type: 'line',
             data: {
-                labels: [],
                 datasets: [{
-                    label: "Pulse Dataset",
                     borderColor: 'rgb(255, 99, 132)',
                     data: [],
                     fill: false,
+ 		    showLine: true,
+		    radius:1,
                 }],
             },
             options: {
+	        legend: {
+		    display: false
+	        },
 		backgroundCOlor: "transparent",
                 title: {
-                    display: true,
+                    display: false,
                     text: 'Pulse Graph',
                 },
                 scales: {
                     xAxes: [{
-                        display: true,
+                        display: false,
                         scaleLabel: {
                             display: false,
                             labelString: 'Time'
                         }
                     }],
                     yAxes: [{
-			ticks: { min: 0, max: 100, stepSize:10 },
+			ticks: { min: -2, max: 2, stepSize:0.10 },
                         display: true,
                         scaleLabel: {
-                            display: true,
+                            display: false,
                             labelString: 'Value'
                         }
                     }]
@@ -83,8 +79,8 @@
 
         const lineChart = new Chart(context, config);
 
-        const source = new EventSource("/chart-data-10-per-second");
-	const x_point_count = 50;
+        const source = new EventSource("/chart-data-60-per-second");
+	const x_point_count = 350;
 
         source.onmessage = function (event) {
             const data = JSON.parse(event.data);
@@ -92,9 +88,7 @@
                 config.data.labels.shift();
                 config.data.datasets[0].data.shift();
             }
-   	    var value = ('vvvv'+data.value.toFixed(2)).slice(-6);
-	    var element = document.getElementById("id01");
-		element.innerHTML = value;
+   	    var value = ('       '+data.value.toFixed(2)).slice(-6);
 	    var elementT = document.getElementById("idt01");
 		elementT.innerHTML = value;
             config.data.labels.push(data.time);

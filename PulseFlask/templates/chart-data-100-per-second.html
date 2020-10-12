@@ -6,9 +6,10 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}" >
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 
-<table width="310" style="margin-left:auto;margin-right:auto">
+<table width="330" style="margin-left:auto;margin-right:auto">
   <tr>
     <td style="font:Georgia" id="idtlabel1">Heartbeat</td>
     <td style="font-family:monospace;" id="idt01" align="right" >100</td>
@@ -64,7 +65,7 @@
                         }
                     }],
                     yAxes: [{
-			ticks: { min: 0, max: 100, stepSize:10 },
+			ticks: { min: -50, max: 50, stepSize:5 },
                         display: true,
                         scaleLabel: {
                             display: false,
@@ -88,7 +89,7 @@
                 config.data.labels.shift();
                 config.data.datasets[0].data.shift();
             }
-   	    var value = ('    '+data.value.toFixed(2)).slice(-6);
+   	    var value = ('     '+data.value.toFixed(2)).slice(-7);
 	    var elementT = document.getElementById("idt01");
 		elementT.innerHTML = value;
             config.data.labels.push(data.time);
