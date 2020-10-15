@@ -31,22 +31,22 @@
                 <register_type name="PatientInfo" type_ref="PatientInfo" />
                 <register_type name="PatientConfig" type_ref="PatientConfig" />
 
-                <topic name="Pulse" register_type_ref="PatientPulse"/>
-                <topic name="Info" register_type_ref="PatientInfo" />
-                <topic name="Config" register_type_ref="PatientConfig" />
+                <topic name="Patient_Pulse" register_type_ref="PatientPulse"/>
+                <topic name="Patient_Info" register_type_ref="PatientInfo" />
+                <topic name="Patient_Config" register_type_ref="PatientConfig" />
 
                 <subscriber name="PulseWisSubscriber">
-                    <data_reader name="PatientPulseReader" topic_ref="Pulse"/>
+                    <data_reader name="PatientPulseReader" topic_ref="Patient_Pulse"/>
 					<!-- ***!!! WIS doesn't like this particular QoS "inconsistent QoS policy"!!!***
                         <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::Periodic_Reliable"/>
 					</data_reader>
                     -->
-                    <data_reader name="PatientInfoReader" topic_ref="Info"/>
+                    <data_reader name="PatientInfoReader" topic_ref="Patient_Info"/>
 					<!--
                         <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::Alarms_Events"/>
                     </data_reader>
 					-->
-                    <data_reader name="PatientConfigReader" topic_ref="Config"/>
+                    <data_reader name="PatientConfigReader" topic_ref="Patient_Config"/>
 					<!--
                         <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::Command_Response"/>
                     </data_reader>
