@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/6.0.1/6.0.0/rti_replay_service.xsd">
+
+    <!-- ============================================ -->
+    <!-- Replay Pulse JSON formatted data (looping)   -->
+    <!-- ============================================ -->
+
+    <replay_service name="PlayPulse">
+
+        <!--  Enable administration from domain 0 -->
+        <administration>
+            <domain_id>0</domain_id>
+        </administration>
+
+        <!--  Top-level storage settings -->
+        <storage>
+            <sqlite>
+                <storage_format>JSON_SQLITE</storage_format>
+		<database_dir>PulseRecording</database_dir>
+            </sqlite>
+        </storage>
+
+        <!-- Specify playback behavior -->
+        <playback>
+            <rate>$(RATE)</rate>
+            <enable_looping>true</enable_looping>
+        </playback>
+      
+        <domain_participant name="DefaultParticipant">
+            <domain_id>0</domain_id>
+        </domain_participant>
+
+        <session name="DefaultSession" default_participant_ref="DefaultParticipant">
+            <topic_group name="DefaultTopicGroup">
+                <allow_topic_name_filter>*</allow_topic_name_filter>
+                <deny_topic_name_filter>rti/*</deny_topic_name_filter>
+            </topic_group>
+        </session>
+    </replay_service>
+
+</dds>
+
