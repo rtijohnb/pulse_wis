@@ -31,27 +31,32 @@
                 <register_type name="PatientInfo" type_ref="PatientInfo" />
                 <register_type name="PatientConfig" type_ref="PatientConfig" />
 
-                <topic name="Patient_Pulse" register_type_ref="PatientPulse"/>
-                <topic name="Patient_Info" register_type_ref="PatientInfo" />
-                <topic name="Patient_Config" register_type_ref="PatientConfig" />
+                <topic name="PatientInfoTopic" register_type_ref="PatientInfo" />
+                <topic name="PatientPulseTopic" register_type_ref="PatientPulse"/>
+                <topic name="PatientConfigTopic" register_type_ref="PatientConfig" />
 
                 <subscriber name="PulseWisSubscriber">
-                    <data_reader name="PatientPulseReader" topic_ref="Patient_Pulse"/>
+                    <data_reader name="PatientPulseReader" topic_ref="PatientPulseTopic"/>
 					<!-- ***!!! WIS doesn't like this particular QoS "inconsistent QoS policy"!!!***
                         <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::Periodic_Reliable"/>
 					</data_reader>
                     -->
-                    <data_reader name="PatientInfoReader" topic_ref="Patient_Info"/>
+                    <data_reader name="PatientInfoReader" topic_ref="PatientInfoTopic"/>
 					<!--
                         <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::Alarms_Events"/>
                     </data_reader>
 					-->
-                    <data_reader name="PatientConfigReader" topic_ref="Patient_Config"/>
+                </subscriber>
+
+                <publisher name="PulseWisPublisher">
+                    <data_writer name="PatientConfigWriter" topic_ref="PatientConfigTopic">
 					<!--
-                        <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::Command_Response"/>
+                        <datawriter_qos base_name="RTI_Eval_Qos_Library_1_0::Command_Response"/>
                     </data_reader>
 					-->
-                </subscriber>
+					</data_writer>
+                </publisher>
+
             </domain_participant>
         </application>
     </web_integration_service>

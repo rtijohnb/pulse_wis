@@ -2,7 +2,7 @@
 <types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/6.0.1/6.0.0/rti_dds_topic_types.xsd">
 
-    <!--
+	<!--
       <module name="RTI">
         <module name="CONSTANTS">
 		-->
@@ -12,8 +12,8 @@
           <const name="COMMAND_RESPONSE_QOS" type="string" value="&quot;Command_Response_Qos&quot;"/>
           <const name="DURABLE_STATE_QOS" type="string" value="&quot;Durable_State_Qos&quot;"/>
           <const name="EVENTS_ALARMS_QOS" type="string" value="&quot;Events_Alarms_Qos&quot;"/>
-          <const name="BATCHED_SAMPLES" type="string" value="Batched_Samples_Qos"/>
-    <!--
+          <const name="BATCHED_SAMPLES_QOS" type="string" value="&quot;Batched_Samples_Qos&quot;"/>
+	<!--
         </module>
         <module name="TYPES">
 		-->
@@ -31,7 +31,7 @@
             <enumerator name="DEGREES_K"/>
           </enum>
           <typedef name="Percentage_t" type="float32"/>
-    <!--
+	<!--
         </module>
         <module name="SENSOR">
 		-->
@@ -56,7 +56,7 @@
             <member name="units" type="nonBasic" nonBasicTypeName="Temperature_Units_t"/>
             <member name="calibrationFactors" type="float32" sequenceMaxLength="3"/>
           </struct>
-    <!--
+	<!--
         </module>
         <module name="PATIENT">
 		-->
@@ -73,11 +73,14 @@
             <member name="Id" type="string" stringMaxLength="32" key="true"/>
           </struct>
           <typedef name="Patient_ID_t" type="nonBasic" nonBasicTypeName="_patient_id_t"/>
-          <struct name="PatientPulse" baseType="Patient_ID_t">
+          <struct name="PatientPulse">
+            <member name="Id" type="nonBasic" nonBasicTypeName="_patient_id_t"/>
             <member name="timestamp" type="nonBasic" nonBasicTypeName="TimeStamp_t"/>
             <member name="readings" type="uint32" sequenceMaxLength="100"/>
+            <member name="bpm" type="uint8"/>
           </struct>
-          <struct name="PatientInfo" baseType="Patient_ID_t">
+          <struct name="PatientInfo">
+            <member name="Id" type="nonBasic" nonBasicTypeName="_patient_id_t"/>
             <member name="FirstName" type="string" stringMaxLength="32"/>
             <member name="LastName" type="string" stringMaxLength="32"/>
             <member name="Age" type="uint32"/>
@@ -85,13 +88,14 @@
             <member name="WeightKg" type="uint32"/>
             <member name="Sex" type="string" stringMaxLength="32"/>
           </struct>
-          <struct name="PatientConfig" baseType="Patient_ID_t">
+          <struct name="PatientConfig">
+            <member name="Id" type="nonBasic" nonBasicTypeName="_patient_id_t"/>
             <member name="PulseHighThreshold" type="uint32" default="200"/>
             <member name="PulseLowThreshold" type="uint32" default="0"/>
           </struct>
-    <!--
+	<!--
         </module>
       </module>
-		-->
-
+    </types>
+	-->
 </types>
