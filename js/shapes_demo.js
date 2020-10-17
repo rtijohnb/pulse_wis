@@ -105,6 +105,7 @@ rti.shapesdemo = {
      * 'Square', or 'Triangle'.
      */
     drawShape: function(sampleSeq, shapeKind) {
+        //console.log(sampleSeq.length, shapeKind);
         sampleSeq.forEach(function(sample, i, samples) {
             // Process metadata
             var validData = sample.read_sample_info.valid_data;

@@ -11,16 +11,18 @@
 
 var rti = rti || {};
 
+var context; 
+var config;
+var linechart;
 /**
  * @namespace rti.pulse
  */
 rti.pulse = {
-
     /**
      * Sets up a new chart. This method needs to be called before reading or drawing ecg info.
      */
     setupScenario: function() {
-          const config = {
+        config = {
             type: 'line',
             data: {
                 labels: [],
@@ -34,7 +36,7 @@ rti.pulse = {
             },
             options: {
                 title: {
-                    display: true,
+                    display: false,
                     text: 'Pulse Graph',
                 },
                 legend: {
@@ -61,10 +63,8 @@ rti.pulse = {
             }
         };
 
-        const context = document.getElementById('canvas').getContext('2d');
-
-        const lineChart = new Chart(context, config);
-
+        context = document.getElementById('canvas').getContext('2d');
+        lineChart = new Chart(context, config);
     },
     /**
      *  The method will call the methods that update the display at 33 ms intervals.
@@ -81,7 +81,7 @@ rti.pulse = {
             "/subscribers/MySubscriber" +
             "/data_readers/MyTriangleReader";
 
-        var pulseDemoIntervalPeriod = 33; // in milliseconds
+        var pulseDemoIntervalPeriod = 1000; // in milliseconds
 
         // Call chartjs() for ecgPulse and bpm every ecgReadIntervalPeriod, passing the data resulting
         // for reading new samples of the appropriate topic in json format without deleting the samples
@@ -95,7 +95,7 @@ rti.pulse = {
                     removeFromReaderCache: "false"
                 },
                 function(data) {
-                    rti.ecg.updateChart(data, "Square"); /* ecgPulse topic name */
+                    rti.pulse.updateChart(data, "Square"); /* ecgPulse topic name */
                 }
             );
 
@@ -107,39 +107,20 @@ rti.pulse = {
                     removeFromReaderCache: "false"
                 },
                 function(data) {
-                    rti.ecg.updateBpm(data, "ecgBpm"); /* Bpm topic name */
+                    rti.pulse.updateBpm(data, "Triangle"); /* Bpm topic name */
                 }
             );
-        })
+        }, pulseDemoIntervalPeriod);
     },
 
     /**
      * Updates the chart with the sequence of values
      * @param sampleSeq Sequence of samples to be drawn.
      */
-    /*
-    const source = new EventSource("/chart-data-10-per-second");
-    const x_point_count = 50;
 
-    source.onmessage = function (event) {
-        const data = JSON.parse(event.data);
-        if (config.data.labels.length === x_point_count) {
-            config.data.labels.shift();
-            config.data.datasets[0].data.shift();
-        }
-       var value = (data.value.toFixed(2)).slice(-6);
-       var elementHb = document.getElementById("heartbeatValue");
-    elementHb.innerHTML = value;
-
-    //var elementHr = document.getElementById("heartrateValue");
-    //elementHr.innerHTML = value;
-
-    config.data.labels.push(data.time);
-    config.data.datasets[0].data.push(data.value);
-    lineChart.update();
-    }
-    */
-    updateChart: function(sampleSeq) {
+    updateChart: function(sampleSeq, topic) {
+        console.log(sampleSeq.length, topic);
+        const x_point_count = 50;
         sampleSeq.forEach(function(sample, i, samples) {
             // Process metadata
             var validData = sample.read_sample_info.valid_data;
@@ -149,25 +130,17 @@ rti.pulse = {
             // If we received an invalid data sample, and the instance state
             // is != ALIVE, then the instance has been either disposed or
             // unregistered and we remove the shape from the canvas.
-            if (!validData) {
-                if (instanceState != "ALIVE") {
-                    
-                    rti.shapesdemo.canvas.getObjects().every(
-                        function (element, j, array) {
-                            if (element.uid.instanceHandle == instanceHandle
-                                && element.uid.topic == shapeKind) {
-                                element.remove();
-                                rti.shapesdemo.canvas.renderAll();
-                                return false;
-                            }
-                            return true;
-                        }
-                    );
-                    return true;
-                }
-                return true;
+            if (validData && instanceState == "ALIVE") {
+
+                    if (config.data.labels.length === x_point_count) {
+                        config.data.labels.shift();
+                        config.data.datasets[0].data.shift();
+                    }
+            
+                    config.data.labels.push(sample.data.x);
+                    config.data.datasets[0].data.push(sample.data.y);
+                    lineChart.update();
             }
-            return true;
         });
     },
     updateBpm: function(sampleSeq) {
