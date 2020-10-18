@@ -1,0 +1,64 @@
+<!-- RTI Data Distribution Service Deployment -->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/6.0.1/6.0.0/rti_web_integration_service.xsd">
+
+    <!--
+        Note that WIS doesn't like including the system designer config file directly, and
+		didn't like the "module" definitions, or the references that stem from the modul-ization
+		of the types in that file.  SO I peeled out the types, de-modulified them and stored
+		the result in this "MedicalDemoTypes.xml" file for configuring type information for 
+		this WIS instance...
+    -->
+    <types>
+        <include file="MedicalDemoTypes.xml" />
+	</types>
+
+    <!--
+        Configuration for the Pulse Demo WIS instance.
+		This assumes that the QoS from the system designer config is peeled out and stored
+		in "USER_QOS_PROFILES.xml" in the working directory that also contains this config
+		file for WIS.
+    -->
+    <web_integration_service name="PulseWis">
+        <application name="PulseWisApp">
+            <domain_participant name="PulseWisParticipant" domain_id="0">
+
+                <!--
+                <participant_qos base_name="RTI_Eval_Qos_Library_1_0::Base_Participant_QoS" />
+                -->
+
+                <register_type name="PatientPulse" type_ref="PatientPulse" />
+                <register_type name="PatientInfo" type_ref="PatientInfo" />
+                <register_type name="PatientConfig" type_ref="PatientConfig" />
+
+                <topic name="PatientInfoTopic" register_type_ref="PatientInfo" />
+                <topic name="PatientPulseTopic" register_type_ref="PatientPulse"/>
+                <topic name="PatientConfigTopic" register_type_ref="PatientConfig" />
+
+                <subscriber name="PulseWisSubscriber">
+                    <data_reader name="PatientPulseReader" topic_ref="PatientPulseTopic"/>
+					<!-- ***!!! WIS doesn't like this particular QoS "inconsistent QoS policy"!!!***
+                        <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::Periodic_Reliable"/>
+					</data_reader>
+                    -->
+                    <data_reader name="PatientInfoReader" topic_ref="PatientInfoTopic"/>
+					<!--
+                        <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::Alarms_Events"/>
+                    </data_reader>
+					-->
+                </subscriber>
+
+                <publisher name="PulseWisPublisher">
+                    <data_writer name="PatientConfigWriter" topic_ref="PatientConfigTopic">
+					<!--
+                        <datawriter_qos base_name="RTI_Eval_Qos_Library_1_0::Command_Response"/>
+                    </data_reader>
+					-->
+					</data_writer>
+                </publisher>
+
+            </domain_participant>
+        </application>
+    </web_integration_service>
+
+</dds>
