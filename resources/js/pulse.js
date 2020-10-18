@@ -53,7 +53,7 @@ rti.pulse = {
                     }],
                     yAxes: [{
                         display: false,
-			            ticks: { min: 0, max: 100, stepSize:10, display: false },
+			            ticks: { min: 0, max: 260, stepSize:10, display: false },
                         scaleLabel: {
                             display: false,
                             labelString: 'Value'
@@ -81,7 +81,7 @@ rti.pulse = {
             "/subscribers/MySubscriber" +
             "/data_readers/MyTriangleReader";
 
-        var pulseDemoIntervalPeriod = 1000; // in milliseconds
+        var pulseDemoIntervalPeriod = 500; // in milliseconds
 
         // Call chartjs() for ecgPulse and bpm every ecgReadIntervalPeriod, passing the data resulting
         // for reading new samples of the appropriate topic in json format without deleting the samples
@@ -137,9 +137,13 @@ rti.pulse = {
                         config.data.datasets[0].data.shift();
                     }
             
-                    config.data.labels.push(sample.data.x);
+                    config.data.labels.push(1);
                     config.data.datasets[0].data.push(sample.data.y);
                     lineChart.update();
+
+                    var value = (sample.data.y.toFixed(2)).slice(-6);
+                    var elementHb = document.getElementById("heartbeatValue");
+                    elementHb.innerHTML = value;
             }
         });
     },
