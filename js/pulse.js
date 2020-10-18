@@ -15,12 +15,17 @@ rti.pulseapp = {
   /**
    * Set up a new canvas, called before graphing.
    */
-  getPulseReaderURL: function() {
+  getBaseURL: function() {
     var app = "/dds/rest1/applications/PulseWisApp";
     var pant = "domain_participants/PulseWisParticipant";
     var sub = "subscribers/PulseWisSubscriber";
-    var reader = "/data_readers/PatientPulseReader";
-    return `${app}/${pant}/${sub}/${reader}`;
+    return `${app}/${pant}/${sub}`;
+  },
+  getPulseReaderURL: function() {
+    return this.getBaseURL() + "/data_readers/PatientPulseReader";
+  },
+  getPatientInfoReaderURL: function() {
+    return this.getBaseURL() + "/data_readers/PatientInfoReader";
   },
   X_POINT_COUNT: 300,
   chart_config: {
@@ -61,9 +66,21 @@ rti.pulseapp = {
   setupScenario: function () {
     const context = document.getElementById('canvas').getContext('2d');
     lineChart = new Chart(context, this.chart_config);
-    BPM_ITEM = document.getElementById("bpmId");
+    ///BPM_ITEM = document.getElementById("bpmId");
+    let url = this.getPatientInfoReaderURL();
+    $.getJSON(
+      url,
+      { sampleFormat:"json"},
+      function(info) {
+        rti.pulseapp.updatePatientInfo(info[0]);
+    });
   },
 
+  updatePatientInfo(data) {
+    const PATIENT_ITEM = document.getElementById('patientNameId');
+    let name = `${data.data.FirstName} ${data.data.LastName} &nbsp; &nbsp; Age: ${data.data.Age}`;
+    PATIENT_ITEM.innerHTML = name;
+  },
   /**
    * Sets up the enviroment for reading Pulse and Beat topics. 
    * The method will call the updatePulse method every 33 ms intervals.
