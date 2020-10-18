@@ -18,7 +18,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>  
     <script src="/resources/js/jquery-1.12.3.min.js"></script>
     <script src="/resources/js/bootstrap.min.js"></script>
-    <script src="/resources/js/pulse.js"></script>
+    <script src="./pulse_shape.js"></script>
     <!--<script src='./js/shapes_demo.js'></script> -->
     </head>
 
@@ -30,8 +30,8 @@
         <tr>
             <td style="width:2%; background-color:black"></td>
             <td style="background-color:black;width:25%">
-                <img src="/resources/img/rti_logo.png" width="25px" height="100%">
-                <img src="/resources/img/heartbeat.png" width="90px" hight="40%">
+                <img src="/resources/img/rti_logo.png" width="10%" height="100%">
+                <img src="/resources/img/heartbeat.png" width="40%" hight="40%">
             </td>
             <td style="width:5%; background-color:black"></td>
             <td style="background-color:black">
@@ -74,8 +74,8 @@
         (function () {
         // Start reading the data
         // Setup scenario and start heartbeat info
-        rti.patient.setupScenario();
-        rti.patient.read();
+        rti.pulse.setupScenario();
+        rti.pulse.read();
         })();
     </script>
 </body>

@@ -14,7 +14,7 @@ var rti = rti || {};
 /**
  * @namespace rti.pulse
  */
-rti.patient = {
+rti.pulse = {
     /**
      * Sets up a new chart. This method needs to be called before reading or drawing ecg info.
      */
@@ -68,17 +68,17 @@ rti.patient = {
      */
     read: function() {
         var pulseReaderUrl =
-            "/dds/rest1/applications/PulseWisApp" +
-            "/domain_participants/PulseWisParticipant" +
-            "/subscribers/PulseWisSubscriber" +
-            "/data_readers/PatientPulseReader";
-        var infoReaderUrl =
-            "/dds/rest1/applications/PulseWisApp" +
-            "/domain_participants/PulseWisParticipant" +
-            "/subscribers/PulseWisSubscriber" +
-            "/data_readers/PatientInfoReader";
+            "/dds/rest1/applications/ShapesDemoApp" +
+            "/domain_participants/MyParticipant" +
+            "/subscribers/MySubscriber" +
+            "/data_readers/MySquareReader";
+        var bpmReaderUrl =
+            "/dds/rest1/applications/ShapesDemoApp" +
+            "/domain_participants/MyParticipant" +
+            "/subscribers/MySubscriber" +
+            "/data_readers/MyTriangleReader";
 
-        var patientUpdateIntervalPeriod = 500; // in milliseconds
+        var pulseDemoIntervalPeriod = 500; // in milliseconds
 
         // Call chartjs() for ecgPulse and bpm every ecgReadIntervalPeriod, passing the data resulting
         // for reading new samples of the appropriate topic in json format without deleting the samples
@@ -93,22 +93,22 @@ rti.patient = {
                     removeFromReaderCache: "false"
                 },
                 function(data) {
-                    rti.patient.updateChart(data); /* ecgPulse topic name */
+                    rti.pulse.updateChart(data, "Square"); /* ecgPulse topic name */
                 }
             );
 
             // Read bmp data
             $.getJSON(
-                infoReaderUrl,
+                bpmReaderUrl,
                 {
                     sampleFormat: "json",
                     removeFromReaderCache: "false"
                 },
                 function(data) {
-                    rti.patient.updateInfo(data, "Triangle"); /* Bpm topic name */
+                    rti.pulse.updateBpm(data, "Triangle"); /* Bpm topic name */
                 }
             );
-        }, patientUpdateIntervalPeriod);
+        }, pulseDemoIntervalPeriod);
     },
 
     /**
@@ -116,50 +116,37 @@ rti.patient = {
      * @param sampleSeq Sequence of samples to be drawn.
      */
 
-    updateChart: function(sampleSeq) {
-        console.log("Sample Length: ", sampleSeq.length);
+    updateChart: function(sampleSeq, topic) {
+        console.log(sampleSeq.length, topic);
         const x_point_count = 50;
         sampleSeq.forEach(function(sample, i, samples) {
             // Process metadata
             var validData = sample.read_sample_info.valid_data;
             var instanceHandle = sample.read_sample_info.instance_handle;
             var instanceState  = sample.read_sample_info.instance_state;
-            var receptionTime  = sample.read_sample_info.reception_timestamp;
 
-            //console.log("valid data: ", validData);
-            //console.log("instance state:", instanceState);
-            console.log("sample received:", receptionTime);
             // If we received an invalid data sample, and the instance state
             // is != ALIVE, then the instance has been either disposed or
             // unregistered and we remove the shape from the canvas.
-            if (validData && (instanceState == "ALIVE")) {
+            if (validData && instanceState == "ALIVE") {
 
                     if (config.data.labels.length === x_point_count) {
                         config.data.labels.shift();
                         config.data.datasets[0].data.shift();
                     }
                     x=+.1;
-
-                    console.log(sample.data);
-                    console.log("Patient Id:", sample.data.Id.Id)
-                    console.log("bpm: ", sample.data.bpm);
-
-                    console.log(sample.read_sample_info.reception_timestamp);
-                    //console.log(sample.log.readings);
-                    //console.log(sample.log.bpm);
-                    /*
+            
                     config.data.labels.push(x);
                     config.data.datasets[0].data.push(sample.data.y);
                     lineChart.update();
-                    */
-                    var value = (sample.data.bpm.toFixed(2)).slice(-6);
+
+                    var value = (sample.data.y.toFixed(2)).slice(-6);
                     var elementHb = document.getElementById("heartbeatValue");
                     elementHb.innerHTML = value;
-
             }
         });
     },
-    updateInfo: function(sampleSeq) {
+    updateBpm: function(sampleSeq) {
         sampleSeq.forEach(function(sample, i, samples) {
             // Process metadata
             var validData = sample.read_sample_info.valid_data;
