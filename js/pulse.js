@@ -42,6 +42,7 @@ rti.pulseapp = {
       }],
     },
     options: {
+      animation: {duration: 0},
       backgroundColor: "transparent",
       title: { display: false, /* text: 'Pulse Graph',*/ },
       legend: { display: false },
@@ -65,7 +66,7 @@ rti.pulseapp = {
   lineChart: null,
   setupScenario: function () {
     const context = document.getElementById('canvas').getContext('2d');
-    lineChart = new Chart(context, this.chart_config);
+    this.lineChart = new Chart(context, this.chart_config);
     ///BPM_ITEM = document.getElementById("bpmId");
     let url = this.getPatientInfoReaderURL();
     $.getJSON(
@@ -93,7 +94,8 @@ rti.pulseapp = {
      * Request the data in JSON format; 
      * update BPM value and chart 
      */
-    let url = this.getPulseReaderURL();
+    var url = this.getPulseReaderURL();
+	  var cnt = 0;
     setInterval(function(){
       $.getJSON(
         url, 
@@ -102,7 +104,7 @@ rti.pulseapp = {
           removeFromReaderCache: "false"
         },
         function (samples)
-        {
+        { 
           rti.pulseapp.updatePulse(samples[0]); // TODO: iterate
         });
       }, drawIntervalPeriod);
@@ -117,16 +119,17 @@ rti.pulseapp = {
     const BPM_ITEM = document.getElementById("bpmId");
     BPM_ITEM.innerHTML = sample.data.bpm;
     var chartData = this.chart_config.data.datasets[0].data;
+    const COUNT_ITEM = document.getElementById("countId");
+    COUNT_ITEM.innerHTML = "len: " + chartData.length;
     var items = [];
     sample.data.readings.forEach(function (item, index) {
       if (chartData.length === this.X_POINT_COUNT) {
         //this.chart_config.data.labels.shift(); // restore if using x labels
         chartData.shift();
       }
-      chartData.push(item);
+      chartData.push(item + 11);
     });
-    lineChart.update();
-    return true;
+    this.lineChart.update();
   },
 }
 
