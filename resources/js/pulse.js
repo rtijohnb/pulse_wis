@@ -11,9 +11,6 @@
 
 var rti = rti || {};
 
-var context; 
-var config;
-var linechart;
 /**
  * @namespace rti.pulse
  */
@@ -45,7 +42,7 @@ rti.pulse = {
                 scales: {
                     xAxes: [{
                         display: false,
-                        ticks: {display: false},
+                        ticks: { min: 0, max: 260, stepSize:10, display: false},
                         scaleLabel: {
                             display: false,
                             labelString: 'Time'
@@ -88,6 +85,7 @@ rti.pulse = {
         // from the Reader's cache.
         setInterval(function(){
             // Read pulse
+            var x=1;
             $.getJSON(
                 pulseReaderUrl,
                 {
@@ -136,8 +134,9 @@ rti.pulse = {
                         config.data.labels.shift();
                         config.data.datasets[0].data.shift();
                     }
+                    x=+.1;
             
-                    config.data.labels.push(1);
+                    config.data.labels.push(x);
                     config.data.datasets[0].data.push(sample.data.y);
                     lineChart.update();
 
