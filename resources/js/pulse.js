@@ -72,7 +72,7 @@ rti.pulseapp = {
                     }],
                     yAxes: [{
                         display: false,
-			            ticks: { min: 0, max: 1000, stepSize:50, display: false },
+			            ticks: { min: 0, max: 1050, stepSize:50, display: false },
                         scaleLabel: {
                             display: false,
                             labelString: 'Value'
@@ -102,16 +102,7 @@ rti.pulseapp = {
      *  The method will call the methods that update the display at 33 ms intervals.
      */
     read: function() {
-        var pulseReaderUrl =
-            "/dds/rest1/applications/PulseWisApp" +
-            "/domain_participants/PulseWisParticipant" +
-            "/subscribers/PulseWisSubscriber" +
-            "/data_readers/PatientPulseReader";
-        var infoReaderUrl =
-            "/dds/rest1/applications/PulseWisApp" +
-            "/domain_participants/PulseWisParticipant" +
-            "/subscribers/PulseWisSubscriber" +
-            "/data_readers/PatientInfoReader";
+        var url = this.getPulseReaderURL();
 
         var chartUpdateIntervalPeriod = 1000; // in milliseconds
 
@@ -120,9 +111,8 @@ rti.pulseapp = {
         // from the Reader's cache.
         setInterval(function(){
             // Read pulse
-            var x=1;
             $.getJSON(
-                pulseReaderUrl,
+                url,
                 {
                     sampleFormat: "json",
                     removeFromReaderCache: "false"
