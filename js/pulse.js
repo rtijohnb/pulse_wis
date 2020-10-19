@@ -10,11 +10,17 @@
  */
 
 var rti = rti || {};
+var cnt = 0;
+const X_POINT_COUNT = 200;
 
 rti.pulseapp = {
   /**
    * Set up a new canvas, called before graphing.
    */
+  getCount: function() {
+	  cnt += 1;
+	  return cnt;
+  },
   getBaseURL: function() {
     var app = "/dds/rest1/applications/PulseWisApp";
     var pant = "domain_participants/PulseWisParticipant";
@@ -27,7 +33,6 @@ rti.pulseapp = {
   getPatientInfoReaderURL: function() {
     return this.getBaseURL() + "/data_readers/PatientInfoReader";
   },
-  X_POINT_COUNT: 300,
   chart_config: {
     type: 'line',
     data: {
@@ -37,8 +42,9 @@ rti.pulseapp = {
         borderColor: 'rgb(255, 99, 132)',
         data: [],
         fill: false,
-        //<!--lineTension: 0, -->
-        //<!--showLine: false, -->
+        pointRadius:1, // removes the dots, default: 3
+        //lineTension: 0,
+        //showLine: false,
       }],
     },
     options: {
@@ -67,7 +73,6 @@ rti.pulseapp = {
   setupScenario: function () {
     const context = document.getElementById('canvas').getContext('2d');
     this.lineChart = new Chart(context, this.chart_config);
-    ///BPM_ITEM = document.getElementById("bpmId");
     let url = this.getPatientInfoReaderURL();
     $.getJSON(
       url,
@@ -88,14 +93,13 @@ rti.pulseapp = {
    */
   readPatientData: function () {
 
-    let drawIntervalPeriod = 33; // in milliseconds
+    let drawIntervalPeriod = 5; // in milliseconds
 
     /**
      * Request the data in JSON format; 
      * update BPM value and chart 
      */
     var url = this.getPulseReaderURL();
-	  var cnt = 0;
     setInterval(function(){
       $.getJSON(
         url, 
@@ -105,7 +109,9 @@ rti.pulseapp = {
         },
         function (samples)
         { 
-          rti.pulseapp.updatePulse(samples[0]); // TODO: iterate
+          samples.forEach(function(sample, index) {
+ 	    rti.pulseapp.updatePulse(sample);
+	  });
         });
       }, drawIntervalPeriod);
   },
@@ -113,21 +119,24 @@ rti.pulseapp = {
    * Update the BPM field and
    * store/shift new data into chartData array
    * update the lineChart
+   * Note: must add label value even if not shown for chart to update
    */
   updatePulse: function (sample) {
     // TODO: avoid getElement... for each update
     const BPM_ITEM = document.getElementById("bpmId");
     BPM_ITEM.innerHTML = sample.data.bpm;
-    var chartData = this.chart_config.data.datasets[0].data;
+    var data = this.chart_config.data;
+    var chartLabels = data.labels;
+    var chartData = data.datasets[0].data;
     const COUNT_ITEM = document.getElementById("countId");
-    COUNT_ITEM.innerHTML = "len: " + chartData.length;
-    var items = [];
+    COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.getCount();
     sample.data.readings.forEach(function (item, index) {
-      if (chartData.length === this.X_POINT_COUNT) {
-        //this.chart_config.data.labels.shift(); // restore if using x labels
+      if (chartData.length >= X_POINT_COUNT) {
+        chartLabels.shift();
         chartData.shift();
       }
-      chartData.push(item + 11);
+      chartData.push(item);
+      chartLabels.push(null);
     });
     this.lineChart.update();
   },
