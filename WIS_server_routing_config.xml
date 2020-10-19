@@ -76,7 +76,7 @@
                         </datareader_qos>
                         <creation_mode>ON_DOMAIN_AND_ROUTE_MATCH</creation_mode>
                     </input>
-                    <output>
+                    <output participant="WanParticipant">
                         <allow_topic_name_filter>PatientConfig</allow_topic_name_filter>
                         <creation_mode>ON_DOMAIN_MATCH</creation_mode>
                     </output>
@@ -85,14 +85,14 @@
                 <auto_topic_route name="ForwardFromPi" enabled="true">
                     <publish_with_original_info>true</publish_with_original_info>
                     <input participant="WanParticipant">
-                        <allow_topic_name_filter>PatientPulse, PatientInfo</allow_topic_name_filter>
+                        <allow_topic_name_filter>PatientPulse,PatientInfo</allow_topic_name_filter>
                         <datareader_qos>
 						<!-- !!!add QoS later -->
                         </datareader_qos>
                         <creation_mode>ON_DOMAIN_MATCH</creation_mode>
                     </input>
-                    <output>
-                        <allow_topic_name_filter>PatientPulse, PatientInfo</allow_topic_name_filter>
+                    <output participant="LocalParticipant">
+                        <allow_topic_name_filter>PatientPulse,PatientInfo</allow_topic_name_filter>
                         <creation_mode>ON_DOMAIN_AND_ROUTE_MATCH</creation_mode>
                     </output>
                 </auto_topic_route>
