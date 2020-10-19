@@ -11,7 +11,7 @@
 
 var rti = rti || {};
 var cnt = 0;
-const X_POINT_COUNT = 200;
+const X_POINT_COUNT = 350;
 
 rti.pulseapp = {
   /**
