@@ -9,6 +9,7 @@ body {
 /* scaling of the graph background image needs improvement */
 canvas {
 	background: url('/resources/img/rti_background.png');
+	padding: 10%;
 	background-position: center;
 	background-repeat: no-repeat;
 }

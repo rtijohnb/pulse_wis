@@ -16,7 +16,7 @@ var rti = rti || {};
  * @namespace rti.pulse
  */
 rti.pulseapp = {
-    X_POINT_COUNT: 300,
+    X_POINT_COUNT: 500,
     chart_config: {},
     cnt: 0,
     lineChart: null,
@@ -84,6 +84,19 @@ rti.pulseapp = {
 
         context = document.getElementById('canvas').getContext('2d');
         this.lineChart = new Chart(context, this.chart_config);
+
+        let url = this.getPatientInfoReaderURL();
+        $.getJSON(
+          url,
+          { sampleFormat:"json"},
+          function(info) {
+            rti.pulseapp.updatePatientInfo(info[0]);
+        });
+    },
+    updatePatientInfo(data) {
+        const PATIENT_ITEM = document.getElementById('patientNameId');
+        let name = `${data.data.FirstName} ${data.data.LastName} &nbsp; &nbsp; Age: ${data.data.Age}`;
+        PATIENT_ITEM.innerHTML = name;
     },
     /**
      *  The method will call the methods that update the display at 33 ms intervals.
