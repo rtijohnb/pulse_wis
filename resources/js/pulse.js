@@ -9,17 +9,38 @@
  * use or inability to use the software.
  */
 
-var rti = rti || {};
 
+
+var rti = rti || {};
 /**
  * @namespace rti.pulse
  */
-rti.patient = {
+rti.pulseapp = {
+    X_POINT_COUNT: 300,
+    chart_config: {},
+    cnt: 0,
+    lineChart: null,
     /**
      * Sets up a new chart. This method needs to be called before reading or drawing ecg info.
      */
+    getCount: function() {
+        cnt += 1;
+        return cnt;
+    },
+    getBaseURL: function() {
+      var app = "/dds/rest1/applications/PulseWisApp";
+      var pant = "domain_participants/PulseWisParticipant";
+      var sub = "subscribers/PulseWisSubscriber";
+      return `${app}/${pant}/${sub}`;
+    },
+    getPulseReaderURL: function() {
+      return this.getBaseURL() + "/data_readers/PatientPulseReader";
+    },
+    getPatientInfoReaderURL: function() {
+      return this.getBaseURL() + "/data_readers/PatientInfoReader";
+    },
     setupScenario: function() {
-        config = {
+        this.chart_config = {
             type: 'line',
             data: {
                 labels: [],
@@ -32,6 +53,7 @@ rti.patient = {
                 }],
             },
             options: {
+                animation: {duration: 0 },
                 title: {
                     display: false,
                     text: 'Pulse Graph',
@@ -42,7 +64,7 @@ rti.patient = {
                 scales: {
                     xAxes: [{
                         display: false,
-                        ticks: { min: 0, max: 260, stepSize:10, display: false},
+                        //ticks: { min: 0, max: 100, stepSize:1, display: false},
                         scaleLabel: {
                             display: false,
                             labelString: 'Time'
@@ -50,7 +72,7 @@ rti.patient = {
                     }],
                     yAxes: [{
                         display: false,
-			            ticks: { min: 0, max: 260, stepSize:10, display: false },
+			            ticks: { min: 0, max: 1000, stepSize:50, display: false },
                         scaleLabel: {
                             display: false,
                             labelString: 'Value'
@@ -61,7 +83,7 @@ rti.patient = {
         };
 
         context = document.getElementById('canvas').getContext('2d');
-        lineChart = new Chart(context, config);
+        this.lineChart = new Chart(context, this.chart_config);
     },
     /**
      *  The method will call the methods that update the display at 33 ms intervals.
@@ -78,7 +100,7 @@ rti.patient = {
             "/subscribers/PulseWisSubscriber" +
             "/data_readers/PatientInfoReader";
 
-        var patientUpdateIntervalPeriod = 500; // in milliseconds
+        var chartUpdateIntervalPeriod = 1000; // in milliseconds
 
         // Call chartjs() for ecgPulse and bpm every ecgReadIntervalPeriod, passing the data resulting
         // for reading new samples of the appropriate topic in json format without deleting the samples
@@ -93,22 +115,10 @@ rti.patient = {
                     removeFromReaderCache: "false"
                 },
                 function(data) {
-                    rti.patient.updateChart(data); /* ecgPulse topic name */
+                    rti.pulseapp.updateChart(data); /* ecgPulse topic name */
                 }
             );
-
-            // Read bmp data
-            $.getJSON(
-                infoReaderUrl,
-                {
-                    sampleFormat: "json",
-                    removeFromReaderCache: "false"
-                },
-                function(data) {
-                    rti.patient.updateInfo(data, "Triangle"); /* Bpm topic name */
-                }
-            );
-        }, patientUpdateIntervalPeriod);
+        }, chartUpdateIntervalPeriod);
     },
 
     /**
@@ -117,41 +127,44 @@ rti.patient = {
      */
 
     updateChart: function(sampleSeq) {
-        console.log("Sample Length: ", sampleSeq.length);
-        const x_point_count = 50;
+        var chart_data = this.chart_config.data.datasets[0].data;
+        var chart_labels = this.chart_config.data.labels;
+        var x_point = this.X_POINT_COUNT; // not sure why I have to rescope this
+        var line_chart = this.lineChart;
+
         sampleSeq.forEach(function(sample, i, samples) {
             // Process metadata
-            var validData = sample.read_sample_info.valid_data;
-            var instanceHandle = sample.read_sample_info.instance_handle;
-            var instanceState  = sample.read_sample_info.instance_state;
-            var receptionTime  = sample.read_sample_info.reception_timestamp;
+            
+            // console.log("sample", sample);
+            // console.log(sample.data.readings.length);
+            var valid_data = sample.read_sample_info.valid_data;
+            var instance_handle = sample.read_sample_info.instance_handle;
+            var instance_state  = sample.read_sample_info.instance_state;
+            var reception_time  = sample.read_sample_info.source_timestamp;
 
-            //console.log("valid data: ", validData);
-            //console.log("instance state:", instanceState);
-            console.log("sample received:", receptionTime);
+            // console.log("sample received:", reception_time);
+
             // If we received an invalid data sample, and the instance state
             // is != ALIVE, then the instance has been either disposed or
             // unregistered and we remove the shape from the canvas.
-            if (validData && (instanceState == "ALIVE")) {
+            if (valid_data && (instance_state == "ALIVE")) {
+                    // console.log(chart_data.length);
+                    // console.log(sample.data.readings.length);
+                    //console.log(sample.data);
 
-                    if (config.data.labels.length === x_point_count) {
-                        config.data.labels.shift();
-                        config.data.datasets[0].data.shift();
-                    }
-                    x=+.1;
+                    sample.data.readings.forEach(function(reading, index){
+                        if (chart_data.length === x_point) { 
+                            chart_labels.shift();
+                            chart_data.shift();
+                        }
+   
+                        //this.chart_config.data.labels.push(x);
+                        chart_labels.push(null);
+                        chart_data.push(reading);
+                    });
 
-                    console.log(sample.data);
-                    console.log("Patient Id:", sample.data.Id.Id)
-                    console.log("bpm: ", sample.data.bpm);
+                    line_chart.update();
 
-                    console.log(sample.read_sample_info.reception_timestamp);
-                    //console.log(sample.log.readings);
-                    //console.log(sample.log.bpm);
-                    /*
-                    config.data.labels.push(x);
-                    config.data.datasets[0].data.push(sample.data.y);
-                    lineChart.update();
-                    */
                     var value = (sample.data.bpm.toFixed(2)).slice(-6);
                     var elementHb = document.getElementById("heartbeatValue");
                     elementHb.innerHTML = value;
@@ -159,34 +172,4 @@ rti.patient = {
             }
         });
     },
-    updateInfo: function(sampleSeq) {
-        sampleSeq.forEach(function(sample, i, samples) {
-            // Process metadata
-            var validData = sample.read_sample_info.valid_data;
-            var instanceHandle = sample.read_sample_info.instance_handle;
-            var instanceState  = sample.read_sample_info.instance_state;
-
-            // If we received an invalid data sample, and the instance state
-            // is != ALIVE, then the instance has been either disposed or
-            // unregistered and we remove the shape from the canvas.
-            if (!validData) {
-                if (instanceState != "ALIVE") {
-                    rti.shapesdemo.canvas.getObjects().every(
-                        function (element, j, array) {
-                            if (element.uid.instanceHandle == instanceHandle
-                                && element.uid.topic == shapeKind) {
-                                element.remove();
-                                rti.shapesdemo.canvas.renderAll();
-                                return false;
-                            }
-                            return true;
-                        }
-                    );
-                    return true;
-                }
-                return true;
-            }
-            return true;
-        });
-     }
 }
