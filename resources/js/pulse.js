@@ -24,8 +24,8 @@ rti.pulseapp = {
      * Sets up a new chart. This method needs to be called before reading or drawing ecg info.
      */
     getCount: function() {
-        cnt += 1;
-        return cnt;
+        this.cnt += 1;
+        return this.cnt;
     },
     getBaseURL: function() {
       var app = "/dds/rest1/applications/PulseWisApp";
@@ -154,6 +154,9 @@ rti.pulseapp = {
             var instance_handle = sample.read_sample_info.instance_handle;
             var instance_state  = sample.read_sample_info.instance_state;
             var reception_time  = sample.read_sample_info.source_timestamp;
+
+            const COUNT_ITEM = document.getElementById("countId");
+            COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.getCount();
 
             // console.log("sample received:", reception_time);
 
