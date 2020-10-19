@@ -145,6 +145,9 @@ rti.pulseapp = {
         var x_point = this.X_POINT_COUNT; // not sure why I have to rescope this
         var line_chart = this.lineChart;
 
+        const COUNT_ITEM = document.getElementById("countId");
+        COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.getCount();
+
         sampleSeq.forEach(function(sample, i, samples) {
             // Process metadata
             
@@ -154,9 +157,6 @@ rti.pulseapp = {
             var instance_handle = sample.read_sample_info.instance_handle;
             var instance_state  = sample.read_sample_info.instance_state;
             var reception_time  = sample.read_sample_info.source_timestamp;
-
-            const COUNT_ITEM = document.getElementById("countId");
-            COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.getCount();
 
             // console.log("sample received:", reception_time);
 
