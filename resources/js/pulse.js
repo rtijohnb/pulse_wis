@@ -82,8 +82,15 @@ rti.pulseapp = {
             }
         };
 
+
         context = document.getElementById('canvas').getContext('2d');
         this.lineChart = new Chart(context, this.chart_config);
+
+        for (i=0; i< this.X_POINT_COUNT; i++){
+            // prefill the chart with gray nominal data
+            this.chart_config.data.labels.push(null);
+            this.chart_config.data.datasets[0].data.push(500);
+        };
 
         let url = this.getPatientInfoReaderURL();
         $.getJSON(
@@ -94,6 +101,7 @@ rti.pulseapp = {
         });
     },
     updatePatientInfo(data) {
+        //console.log(data);
         const PATIENT_ITEM = document.getElementById('patientNameId');
         let name = `${data.data.FirstName} ${data.data.LastName} &nbsp; &nbsp; Age: ${data.data.Age}`;
         PATIENT_ITEM.innerHTML = name;
@@ -137,6 +145,11 @@ rti.pulseapp = {
 
         const COUNT_ITEM = document.getElementById("countId");
         COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.getCount();
+        
+        // how to change the line color in time (can also be changed by value condition)
+        // line_chart.config.data.datasets[0].borderColor="rgb(255, 99, 132)";
+        // line_chart.config.data.datasets[0].backgroundColor="rgb(255, 99, 132)";
+    
 
         sampleSeq.forEach(function(sample, i, samples) {
             // Process metadata
@@ -147,6 +160,7 @@ rti.pulseapp = {
             var instance_handle = sample.read_sample_info.instance_handle;
             var instance_state  = sample.read_sample_info.instance_state;
             var reception_time  = sample.read_sample_info.source_timestamp;
+            var averageReading;
 
             // console.log("sample received:", reception_time);
 
@@ -156,15 +170,16 @@ rti.pulseapp = {
             if (valid_data && (instance_state == "ALIVE")) {
                     // console.log(chart_data.length);
                     // console.log(sample.data.readings.length);
-                    //console.log(sample.data);
+                    // console.log(sample.data);
 
                     sample.data.readings.forEach(function(reading, index){
-                        if (chart_data.length === x_point) { 
-                            chart_labels.shift();
-                            chart_data.shift();
-                        }
-   
-                        //this.chart_config.data.labels.push(x);
+                        index += index;
+
+                        chart_labels.shift();
+                        chart_data.shift();
+
+                        if (reading < 100) { reading = 500;} //- simple filter to get rid of spikes in the data
+                        // Better to fix this at the source (not the browser) or integrate the sample more.
                         chart_labels.push(null);
                         chart_data.push(reading);
                     });

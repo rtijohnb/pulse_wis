@@ -17,8 +17,8 @@
         <!--  Top-level storage settings -->
         <storage>
             <sqlite>
-                <storage_format>JSON_SQLITE</storage_format>
-		<database_dir>PulseRecording</database_dir>
+              <!--storage_format>JSON_SQLITE</storage_format-->
+	      <database_dir>PulseRecording</database_dir>
             </sqlite>
         </storage>
 
