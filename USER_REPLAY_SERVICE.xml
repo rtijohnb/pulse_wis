@@ -29,7 +29,7 @@
         </playback>
       
         <domain_participant name="DefaultParticipant">
-            <domain_id>0</domain_id>
+            <domain_id>20</domain_id>
         </domain_participant>
 
         <session name="DefaultSession" default_participant_ref="DefaultParticipant">
