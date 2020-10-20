@@ -16,12 +16,12 @@
 		</annotation>
 
         <!-- Enable remote administration of the routing service from some specified domain -->
-        <administration><domain_id>0</domain_id></administration> <!-- !!!Consult Ross re. alternate domain ID choice. -->
+        <administration><domain_id>0</domain_id></administration> <!-- !!!ToDo: Not sure if we want this at all... -->
 
         <domain_route name="Route">
 
             <participant name="WanParticipant">
-                <domain_id>10</domain_id> <!-- !!!Verify this with Ross -->
+                <domain_id>10</domain_id>
                 <participant_qos>
                     <transport_builtin>
                         <mask>MASK_NONE</mask>
@@ -46,11 +46,11 @@
                             </element>
                             <element>
                                 <name>dds.transport.TCPv4.tcp1.public_address</name>
-                                <value>50.18.214.8:9900</value> <!-- !!!Verify this with Ross -->
+                                <value>50.18.214.8:9900</value>
                             </element>
                             <element>
                                 <name>dds.transport.TCPv4.tcp1.server_bind_port</name>
-                                <value>7400</value>
+                                <value>9900</value>
                             </element>
                             <element>
                                 <name>dds.transport.TCPv4.tcp1.disable_nagle</name>
@@ -62,7 +62,7 @@
             </participant>
 
             <participant name="LocalParticipant">
-                <domain_id>20</domain_id> <!-- !!!Verify this with Ross -->
+                <domain_id>20</domain_id>
             </participant>
 
             <session name="Session" enabled="true">
@@ -70,30 +70,29 @@
                 <auto_topic_route name="ForwardToPi" enabled="true">
                     <publish_with_original_info>true</publish_with_original_info>                    
                     <input participant="LocalParticipant">
-                        <allow_topic_name_filter>PatientConfig</allow_topic_name_filter>
+                        <allow_topic_name_filter>PatientConfigTopic</allow_topic_name_filter>
                         <datareader_qos>
-						<!-- !!!add QoS later -->
+						<!-- !!!ToDo: add QoS later -->
                         </datareader_qos>
-                        <creation_mode>ON_DOMAIN_AND_ROUTE_MATCH</creation_mode>
                     </input>
                     <output participant="WanParticipant">
-                        <allow_topic_name_filter>PatientConfig</allow_topic_name_filter>
-                        <creation_mode>ON_DOMAIN_MATCH</creation_mode>
+                        <allow_topic_name_filter>PatientConfigTopic</allow_topic_name_filter>
                     </output>
                 </auto_topic_route>
 
                 <auto_topic_route name="ForwardFromPi" enabled="true">
                     <publish_with_original_info>true</publish_with_original_info>
                     <input participant="WanParticipant">
-                        <allow_topic_name_filter>PatientPulse,PatientInfo</allow_topic_name_filter>
+                        <allow_topic_name_filter>PatientPulseTopic,PatientInfoTopic</allow_topic_name_filter>
                         <datareader_qos>
-						<!-- !!!add QoS later -->
+						<!-- !!!ToDo: add QoS later -->
                         </datareader_qos>
-                        <creation_mode>ON_DOMAIN_MATCH</creation_mode>
                     </input>
                     <output participant="LocalParticipant">
-                        <allow_topic_name_filter>PatientPulse,PatientInfo</allow_topic_name_filter>
-                        <creation_mode>ON_DOMAIN_AND_ROUTE_MATCH</creation_mode>
+                        <allow_topic_name_filter>PatientPulseTopic,PatientInfoTopic</allow_topic_name_filter>
+                        <datawriter_qos>
+						<!-- !!!ToDo: add QoS later -->
+                        </datawriter_qos>
                     </output>
                 </auto_topic_route>
 

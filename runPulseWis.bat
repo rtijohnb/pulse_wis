@@ -2,5 +2,5 @@
 "%NDDSHOME%/bin/rtiwebintegrationservice.bat" ^
   -cfgName PulseWis ^
   -enableKeepAlive yes ^
-  -listeningPorts 9900 ^
+  -listeningPorts 8080 ^
   -documentRoot .

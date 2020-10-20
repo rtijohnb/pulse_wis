@@ -15,26 +15,25 @@
 		</annotation>
 
         <!-- Enable remote administration of the routing service from some specified domain -->
-        <administration><domain_id>0</domain_id></administration> <!-- !!!Consult Ross re. alternate domain ID choice. -->
+        <administration><domain_id>0</domain_id></administration> <!-- !!!ToDo: Ask Dave if he wants administration at all and from where -->
 
         <domain_route name="Route">
 
         <!-- The "LocalParticipant" is the local DDS domain used between the routing -->
         <!-- service and the actual Pulse application that is running on the Pi.     -->
-        <!-- Adjust the domain ID accordingly; !!!it MAY be necessary to add params here.     -->
             <participant name="LocalParticipant">
-                <domain_id>0</domain_id>  <!-- !!!ask Ross/Dave what domain ID they want to use on the Pi -->
+                <domain_id>0</domain_id>  <!-- !!!ToDo: Ask Dave what domain ID they want to use on the Pi -->
             </participant>
 
         <!-- The "WanParticipant" is the DDS domain that uses the TCP-WAN transport  -->
         <!-- to connect to the remote WIS server.  Adjust the IP address and port    -->
-        <!-- information as required. !!!Domain ID???                                -->
+        <!-- information as required.                                                -->
             <participant name="WanParticipant">
-                <domain_id>10</domain_id> <!-- !!!ask Ross if it matters much what this ID is??? -->
+                <domain_id>10</domain_id>
                 <participant_qos>
                     <discovery>
                         <initial_peers>
-                            <element>tcpv4_wan://50.18.214.8:9900</element> <!-- !!!Verify this with Ross -->
+                            <element>tcpv4_wan://50.18.214.8:9900</element>
                         </initial_peers>
                     </discovery>
                     <discovery_config>
@@ -94,30 +93,26 @@
                 <auto_topic_route name="ForwardFromWan" enabled="true">
                     <publish_with_original_info>true</publish_with_original_info>                    
                     <input participant="WanParticipant">
-                        <allow_topic_name_filter>PatientConfig</allow_topic_name_filter>
+                        <allow_topic_name_filter>PatientConfigTopic</allow_topic_name_filter>
                         <datareader_qos>
-						<!-- !!!add QoS later -->
+						<!-- !!!ToDo: add QoS later -->
                         </datareader_qos>
-                        <creation_mode>ON_DOMAIN_AND_ROUTE_MATCH</creation_mode>
                     </input>
                     <output participant="LocalParticipant">
-                        <allow_topic_name_filter>PatientConfig</allow_topic_name_filter>
-                        <creation_mode>ON_DOMAIN_MATCH</creation_mode>
+                        <allow_topic_name_filter>PatientConfigTopic</allow_topic_name_filter>
                     </output>
                 </auto_topic_route>
 
                 <auto_topic_route name="ForwardToWan" enabled="true">
                     <publish_with_original_info>true</publish_with_original_info>
                     <input participant="LocalParticipant">
-                        <allow_topic_name_filter>PatientPulse,PatientInfo</allow_topic_name_filter>
+                        <allow_topic_name_filter>PatientPulseTopic,PatientInfoTopic</allow_topic_name_filter>
                         <datareader_qos>
-						<!-- !!!add QoS later -->
+						<!-- !!!ToDo: add QoS later -->
                         </datareader_qos>
-                        <creation_mode>ON_DOMAIN_MATCH</creation_mode>
                     </input>
                     <output participant="WanParticipant">
-                        <allow_topic_name_filter>PatientPulse,PatientInfo</allow_topic_name_filter>
-                        <creation_mode>ON_DOMAIN_AND_ROUTE_MATCH</creation_mode>
+                        <allow_topic_name_filter>PatientPulseTopic,PatientInfoTopic</allow_topic_name_filter>
                     </output>
                 </auto_topic_route>
                 
