@@ -187,7 +187,7 @@ rti.pulseapp = {
 
                     line_chart.update();
 
-                    var value = (sample.data.bpm.toFixed(2)).slice(-6);
+                    var value = sample.data.bpm;
                     var elementHb = document.getElementById("heartbeatValue");
                     elementHb.innerHTML = value;
 
