@@ -26,6 +26,8 @@
                 <!--
                 <participant_qos base_name="RTI_Eval_Qos_Library_1_0::Base_Participant_QoS" />
                 -->
+				<participant_qos>
+				</participant_qos>
 
                 <register_type name="PatientPulse" type_ref="PatientPulse" />
                 <register_type name="PatientInfo" type_ref="PatientInfo" />
