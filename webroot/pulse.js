@@ -50,6 +50,7 @@ rti.pulseapp = {
                     borderColor: 'rgb(255, 99, 132)',
                     data: [],
                     fill: false,
+                    pointRadius:1, // removes the dots, default: 3
                 }],
             },
             options: {
