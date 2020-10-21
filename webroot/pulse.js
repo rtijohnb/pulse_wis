@@ -98,7 +98,9 @@ rti.pulseapp = {
           url,
           { sampleFormat:"json"},
           function(info) {
-            rti.pulseapp.updatePatientInfo(info[0]);
+            if (info && info.length) {
+	        rti.pulseapp.updatePatientInfo(info[0]);
+	    }
         });
     },
     updatePatientInfo(data) {
@@ -113,7 +115,7 @@ rti.pulseapp = {
     read: function() {
         var url = this.getPulseReaderURL();
 
-        var chartUpdateIntervalPeriod = 1000; // in milliseconds
+        var chartUpdateIntervalPeriod = 50; // in milliseconds
 
         // Call chartjs() for ecgPulse and bpm every ecgReadIntervalPeriod, passing the data resulting
         // for reading new samples of the appropriate topic in json format without deleting the samples
@@ -127,7 +129,9 @@ rti.pulseapp = {
                     removeFromReaderCache: "false"
                 },
                 function(data) {
-                    rti.pulseapp.updateChart(data); /* ecgPulse topic name */
+		    if (data) {
+                        rti.pulseapp.updateChart(data); /* ecgPulse topic name */
+		    }
                 }
             );
         }, chartUpdateIntervalPeriod);

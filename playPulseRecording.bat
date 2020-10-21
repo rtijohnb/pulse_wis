@@ -1,4 +1,4 @@
 @echo off
 "%NDDSHOME%/bin/rtireplayservice.bat" ^
-  -cfgName PlayPulse ^
-  -DRATE=1.0
+  -cfgName PlayPulse -verbosity 3 ^
+  -DRATE=10.0 -domainIdBase 20
