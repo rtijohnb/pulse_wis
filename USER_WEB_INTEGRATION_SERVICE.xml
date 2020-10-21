@@ -21,7 +21,11 @@
     -->
     <web_integration_service name="PulseWis">
         <application name="PulseWisApp">
+<<<<<<< HEAD
             <domain_participant name="PulseWisParticipant" domain_id="20">
+=======
+            <domain_participant name="PulseWisParticipant" domain_id="0">
+>>>>>>> main
 
                 <!--
                 <participant_qos base_name="RTI_Eval_Qos_Library_1_0::Base_Participant_QoS" />

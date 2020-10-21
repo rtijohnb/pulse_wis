@@ -1,15 +1,25 @@
 
 body {
+<<<<<<< HEAD
 	margin: 0;
 	padding: 0;
 	background-color: #cccccc;
+=======
+	/* margin: 0; */
+	padding: 0;
+	/* background-color: #cccccc; */
+>>>>>>> main
 	/* background: url('/resources/img/rti_background.png') */; 
 }
 
 /* scaling of the graph background image needs improvement */
 canvas {
+<<<<<<< HEAD
 	background: url('/resources/img/rti_background.png');
 	padding: 10%;
+=======
+	background-image: url('/resources/img/rti_background.png');
+>>>>>>> main
 	background-position: center;
 	background-repeat: no-repeat;
 }
