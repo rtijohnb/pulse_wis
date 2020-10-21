@@ -101,7 +101,7 @@ rti.pulseapp = {
         });
     },
     updatePatientInfo(data) {
-        //console.log(data);
+        // console.log(data);
         const PATIENT_ITEM = document.getElementById('patientNameId');
         let name = `${data.data.FirstName} ${data.data.LastName} &nbsp; &nbsp; Age: ${data.data.Age}`;
         PATIENT_ITEM.innerHTML = name;

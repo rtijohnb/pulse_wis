@@ -5,10 +5,6 @@ Currently this branch holds three pages for demo:
 
 -    localhost:port/         <--- The final display of pulse topic on chart js. (not working - same as Localhost:port/shapes/) 
                                 - Start WIS with USER_WEB_INTEGRATION_SERVICE.xml
--    localhost:port/shapes/  <--- Chart.js with Shapes demo (squares driving the y axis) 
-                                - Start WIS with simple_shapes_demo.xml
--    localhost:port/js       <--- The original Shapes Demo (using Fabric - just shows WIS is working) 
-                                - Start WIS with simple_shapes_demo.xml
 
 Current State: of localhost:port/ route
 - Recorded Data Dave Seltz provided is running through Ken's WIS config. Correct BPM is displayed on the banner and other data is logged to the console (I.e. we can read actual Patient Pulse and Info topics)
@@ -55,14 +51,6 @@ example would be under ``http://<hostname>:port/Github/pulse_wis/js``
 underlying TCP connection between client and server between subsequent requests
 and responses when possible.
 
-### Running RTI Shapes Demo
-Once you have started _Web Integration Service_, you can open _RTI Shapes
-Demo_ and start publishing shapes.
-
-### Running Simple Shapes Demo JavaScript Client
-Open a browser and navigate to
-``http://<hostname>:port/examples/simple_shapes_demo/js``. You will find
-there all the shapes that are being published.
 
 ### To Replay Pulse Data on Domain 0 to WIS
 From the directory with the USER_REPLAY_SERVICE.xml file (e.g., ~/Github/pulse_wis):
