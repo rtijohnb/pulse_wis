@@ -9,136 +9,189 @@
  * use or inability to use the software.
  */
 
+
+
 var rti = rti || {};
-var cnt = 0;
-const X_POINT_COUNT = 350;
-
+/**
+ * @namespace rti.pulse
+ */
 rti.pulseapp = {
-  /**
-   * Set up a new canvas, called before graphing.
-   */
-  getCount: function() {
-	  cnt += 1;
-	  return cnt;
-  },
-  getBaseURL: function() {
-    var app = "/dds/rest1/applications/PulseWisApp";
-    var pant = "domain_participants/PulseWisParticipant";
-    var sub = "subscribers/PulseWisSubscriber";
-    return `${app}/${pant}/${sub}`;
-  },
-  getPulseReaderURL: function() {
-    return this.getBaseURL() + "/data_readers/PatientPulseReader";
-  },
-  getPatientInfoReaderURL: function() {
-    return this.getBaseURL() + "/data_readers/PatientInfoReader";
-  },
-  chart_config: {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: [{
-        label: "Pulse",
-        borderColor: 'rgb(255, 99, 132)',
-        data: [],
-        fill: false,
-        pointRadius:1, // removes the dots, default: 3
-        //lineTension: 0,
-        //showLine: false,
-      }],
+    X_POINT_COUNT: 500,
+    chart_config: {},
+    cnt: 0,
+    lineChart: null,
+    /**
+     * Sets up a new chart. This method needs to be called before reading or drawing ecg info.
+     */
+    getCount: function() {
+        this.cnt += 1;
+        return this.cnt;
     },
-    options: {
-      animation: {duration: 0},
-      backgroundColor: "transparent",
-      title: { display: false, /* text: 'Pulse Graph',*/ },
-      legend: { display: false },
-      scales: {
-        xAxes: [ {
-          display: false,
-          scaleLabel: { display: false, /* labelString: 'Time' */ },
-        }],
-        yAxes: [ {
-          ticks: {
-            min: 0,
-            max: 1000,
-            stepSize: 50
-          },
-          display: true,
-          scaleLabel: { display: false, /* labelString: 'Value' */ },
-        }]
-      }
-    }
-  },
-  lineChart: null,
-  setupScenario: function () {
-    const context = document.getElementById('canvas').getContext('2d');
-    this.lineChart = new Chart(context, this.chart_config);
-    let url = this.getPatientInfoReaderURL();
-    $.getJSON(
-      url,
-      { sampleFormat:"json"},
-      function(info) {
-        rti.pulseapp.updatePatientInfo(info[0]);
-    });
-  },
+    getBaseURL: function() {
+      var app = "/dds/rest1/applications/PulseWisApp";
+      var pant = "domain_participants/PulseWisParticipant";
+      var sub = "subscribers/PulseWisSubscriber";
+      return `${app}/${pant}/${sub}`;
+    },
+    getPulseReaderURL: function() {
+      return this.getBaseURL() + "/data_readers/PatientPulseReader";
+    },
+    getPatientInfoReaderURL: function() {
+      return this.getBaseURL() + "/data_readers/PatientInfoReader";
+    },
+    setupScenario: function() {
+        this.chart_config = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: "Pulse",
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: [],
+                    fill: false,
+                    pointRadius:1, // removes the dots, default: 3
+                }],
+            },
+            options: {
+                animation: {duration: 0 },
+                title: {
+                    display: false,
+                    text: 'Pulse Graph',
+                },
+                legend: {
+                    display: false
+                },
+                scales: {
+                    xAxes: [{
+                        display: false,
+                        //ticks: { min: 0, max: 100, stepSize:1, display: false},
+                        scaleLabel: {
+                            display: false,
+                            labelString: 'Time'
+                        }
+                    }],
+                    yAxes: [{
+                        display: false,
+			            ticks: { min: 0, max: 1050, stepSize:50, display: false },
+                        scaleLabel: {
+                            display: false,
+                            labelString: 'Value'
+                        }
+                    }]
+                }
+            }
+        };
 
-  updatePatientInfo(data) {
-    const PATIENT_ITEM = document.getElementById('patientNameId');
-    let name = `${data.data.FirstName} ${data.data.LastName} &nbsp; &nbsp; Age: ${data.data.Age}`;
-    PATIENT_ITEM.innerHTML = name;
-  },
-  /**
-   * Sets up the enviroment for reading Pulse and Beat topics. 
-   * The method will call the updatePulse method every 33 ms intervals.
-   */
-  readPatientData: function () {
 
-    let drawIntervalPeriod = 5; // in milliseconds
+        context = document.getElementById('canvas').getContext('2d');
+        this.lineChart = new Chart(context, this.chart_config);
+
+        for (i=0; i< this.X_POINT_COUNT; i++){
+            // prefill the chart with gray nominal data
+            this.chart_config.data.labels.push(null);
+            this.chart_config.data.datasets[0].data.push(500);
+        };
+
+        let url = this.getPatientInfoReaderURL();
+        $.getJSON(
+          url,
+          { sampleFormat:"json"},
+          function(info) {
+            rti.pulseapp.updatePatientInfo(info[0]);
+        });
+    },
+    updatePatientInfo(data) {
+        // console.log(data);
+        const PATIENT_ITEM = document.getElementById('patientNameId');
+        let name = `${data.data.FirstName} ${data.data.LastName} &nbsp; &nbsp; Age: ${data.data.Age}`;
+        PATIENT_ITEM.innerHTML = name;
+    },
+    /**
+     *  The method will call the methods that update the display at 33 ms intervals.
+     */
+    read: function() {
+        var url = this.getPulseReaderURL();
+
+        var chartUpdateIntervalPeriod = 1000; // in milliseconds
+
+        // Call chartjs() for ecgPulse and bpm every ecgReadIntervalPeriod, passing the data resulting
+        // for reading new samples of the appropriate topic in json format without deleting the samples
+        // from the Reader's cache.
+        setInterval(function(){
+            // Read pulse
+            $.getJSON(
+                url,
+                {
+                    sampleFormat: "json",
+                    removeFromReaderCache: "false"
+                },
+                function(data) {
+                    rti.pulseapp.updateChart(data); /* ecgPulse topic name */
+                }
+            );
+        }, chartUpdateIntervalPeriod);
+    },
 
     /**
-     * Request the data in JSON format; 
-     * update BPM value and chart 
+     * Updates the chart with the sequence of values
+     * @param sampleSeq Sequence of samples to be drawn.
      */
-    var url = this.getPulseReaderURL();
-    setInterval(function(){
-      $.getJSON(
-        url, 
-        {
-          sampleFormat: "json",
-          removeFromReaderCache: "false"
-        },
-        function (samples)
-        { 
-          samples.forEach(function(sample, index) {
- 	    rti.pulseapp.updatePulse(sample);
-	  });
-        });
-      }, drawIntervalPeriod);
-  },
-  /**
-   * Update the BPM field and
-   * store/shift new data into chartData array
-   * update the lineChart
-   * Note: must add label value even if not shown for chart to update
-   */
-  updatePulse: function (sample) {
-    // TODO: avoid getElement... for each update
-    const BPM_ITEM = document.getElementById("bpmId");
-    BPM_ITEM.innerHTML = sample.data.bpm;
-    var data = this.chart_config.data;
-    var chartLabels = data.labels;
-    var chartData = data.datasets[0].data;
-    const COUNT_ITEM = document.getElementById("countId");
-    COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.getCount();
-    sample.data.readings.forEach(function (item, index) {
-      if (chartData.length >= X_POINT_COUNT) {
-        chartLabels.shift();
-        chartData.shift();
-      }
-      chartData.push(item);
-      chartLabels.push(null);
-    });
-    this.lineChart.update();
-  },
-}
 
+    updateChart: function(sampleSeq) {
+        var chart_data = this.chart_config.data.datasets[0].data;
+        var chart_labels = this.chart_config.data.labels;
+        var x_point = this.X_POINT_COUNT; // not sure why I have to rescope this
+        var line_chart = this.lineChart;
+
+        const COUNT_ITEM = document.getElementById("countId");
+        COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.getCount();
+        
+        // how to change the line color in time (can also be changed by value condition)
+        // line_chart.config.data.datasets[0].borderColor="rgb(255, 99, 132)";
+        // line_chart.config.data.datasets[0].backgroundColor="rgb(255, 99, 132)";
+    
+
+        sampleSeq.forEach(function(sample, i, samples) {
+            // Process metadata
+            
+            // console.log("sample", sample);
+            // console.log(sample.data.readings.length);
+            var valid_data = sample.read_sample_info.valid_data;
+            var instance_handle = sample.read_sample_info.instance_handle;
+            var instance_state  = sample.read_sample_info.instance_state;
+            var reception_time  = sample.read_sample_info.source_timestamp;
+            var averageReading;
+
+            // console.log("sample received:", reception_time);
+
+            // If we received an invalid data sample, and the instance state
+            // is != ALIVE, then the instance has been either disposed or
+            // unregistered and we remove the shape from the canvas.
+            if (valid_data && (instance_state == "ALIVE")) {
+                    // console.log(chart_data.length);
+                    // console.log(sample.data.readings.length);
+                    // console.log(sample.data);
+
+                    sample.data.readings.forEach(function(reading, index){
+                        index += index;
+
+                        chart_labels.shift();
+                        chart_data.shift();
+
+                        if (reading < 100) { reading = 500;} //- simple filter to get rid of spikes in the data
+                        // Better to fix this at the source (not the browser) or integrate the sample more.
+                        chart_labels.push(null);
+                        chart_data.push(reading);
+                    });
+
+                    line_chart.update();
+
+                    var value = (sample.data.bpm.toFixed(2)).slice(-6);
+                    var elementHb = document.getElementById("heartbeatValue");
+                    elementHb.innerHTML = value;
+
+            }
+        });
+    },
+}

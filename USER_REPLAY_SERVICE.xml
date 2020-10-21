@@ -17,8 +17,8 @@
         <!--  Top-level storage settings -->
         <storage>
             <sqlite>
-                <storage_format>JSON_SQLITE</storage_format>
-		<database_dir>PulseRecording</database_dir>
+              <!--storage_format>JSON_SQLITE</storage_format-->
+	      <database_dir>PulseRecording</database_dir>
             </sqlite>
         </storage>
 
@@ -29,6 +29,9 @@
         </playback>
       
         <domain_participant name="DefaultParticipant">
+            <!-- As we switch to Domain 20, we will need to change this domain_id to 20.
+                right now with the replayed data on domain0 we need to leave this 20 and
+                add the to the replay command line -domainIdBase 20 -->
             <domain_id>0</domain_id>
         </domain_participant>
 
@@ -41,4 +44,3 @@
     </replay_service>
 
 </dds>
-
