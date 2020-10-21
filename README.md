@@ -15,6 +15,8 @@ To run this example locally, execute _Web Integration Service as described below
 To get data use either a real source or use replay service provided and start it 
 as described below.
 
+Note: Domain 20 is used between the "AWS Router Service" and WIS - i.e. the PulseTopic DDS Databus is domain 20. 
+
 ### Running Web Integration Service
 To run the example, open a terminal and enter the following command:
 
@@ -53,7 +55,12 @@ and responses when possible.
 
 ### To Replay Pulse Data on Domain 0 to WIS
 From the directory with the USER_REPLAY_SERVICE.xml file (e.g., ~/Github/pulse_wis):
- /Applications/rti_connext_dds-6.0.1/bin/rtireplayservice -cfgName PlayHeart -verbosity 3 -DRATE=1.0
+ /Applications/rti_connext_dds-6.0.1/bin/rtireplayservice -cfgName PlayHeart -verbosity 3 -DRATE=1.0 -domainIdBase 20
+ 
 
  Note: File ./USER_REPLAY_SERVICE.xml is pulled in by default 
 
+NOTE:  Domain 20 is used between the "AWS Router Service" and WIS. Replay data was done on domain 0. To use replay data
+you need to set the Replay Service <domain_participant name="DefaultParticipant"> <domain_id>0 but add the parameter
+-domainIdBase 20 to the replay command line.  To use actual data coming in on domain 20 you won't use replay service and 
+therefore the above note does not apply
