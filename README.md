@@ -27,7 +27,7 @@ $NDDSHOME/bin/rtiwebintegrationservice \
   -cfgName PulseWis \
   -enableKeepAlive yes \
   -listeningPorts 9900\
-  -documentRoot ~/path to index.html for ``http://<hostname>:8080``
+  -documentRoot ~/path to index.html for ``http://<hostname>:9900``
 ```
 Example: (from toplevel directory with USER_WEB_INTEGRATION_SERVICE.xml)
 $NDDSHOME/bin/rtiwebintegrationservice  -cfgName PulseWis  -enableKeepAlive yes -documentRoot ~/GitHub/pulse_wis/webroot/
