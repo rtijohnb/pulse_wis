@@ -115,7 +115,7 @@ rti.pulseapp = {
     read: function() {
         var url = this.getPulseReaderURL();
 
-        var chartUpdateIntervalPeriod = 1000; // in milliseconds
+        var chartUpdateIntervalPeriod = 50; // in milliseconds
 
         // Call chartjs() for ecgPulse and bpm every ecgReadIntervalPeriod, passing the data resulting
         // for reading new samples of the appropriate topic in json format without deleting the samples

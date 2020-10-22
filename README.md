@@ -53,7 +53,7 @@ underlying TCP connection between client and server between subsequent requests
 and responses when possible.
 
 
-### To Replay Pulse Data on Domain 20 to WIS
+### To Replay Pulse Data on Domain 0 to WIS
 From the directory with the USER_REPLAY_SERVICE.xml file (e.g., ~/Github/pulse_wis):
  /Applications/rti_connext_dds-6.0.1/bin/rtireplayservice -cfgName PlayPulse -verbosity 3 -DRATE=1.0 -domainIdBase 20
  
