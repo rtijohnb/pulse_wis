@@ -76,12 +76,19 @@
     <p style="text-align:center" class="patient" id="countId"> placeholder count 
     </p>
 
+    <div style="text-align:center" >
+    <input value="200" type="button" class="btn btn-large btn-success" id="btn200">  </a>
+    <input value="100" type="button" class="btn btn-large " id="btn100">  </a>
+    <input value="50 [alt-shift-f]" type="button" accesskey="f" class="btn btn-large btn-success" id="btn50"> </a>
+    </div>
+
     <script>
         (function () {
         // Start reading the data
         // Setup scenario and start heartbeat info
         rti.pulseapp.setupScenario();
         rti.pulseapp.read();
+
         })();
     </script>
 </body>

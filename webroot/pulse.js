@@ -17,33 +17,46 @@ var rti = rti || {};
  */
 rti.pulseapp = {
     X_POINT_COUNT: 500,
-    chart_config: {},
+    patientId: null,
+    chartConfig: {},
     cnt: 0,
     lineChart: null,
-    /**
-     * Sets up a new chart. This method needs to be called before reading or drawing ecg info.
-     */
     getCount: function() {
         this.cnt += 1;
         return this.cnt;
     },
-    getBaseURL: function() {
+    getPatientId: function() { return this.patientId;},
+    setPatientId: function(id) { this.patientId = id; },
+    getBaseURL: function(is_pub) {
       var app = "/dds/rest1/applications/PulseWisApp";
       var pant = "domain_participants/PulseWisParticipant";
-      var sub = "subscribers/PulseWisSubscriber";
-      return `${app}/${pant}/${sub}`;
+      var pOrS;
+      if (is_pub) {
+        pOrS = "publishers/PulseWisPublisher";
+      } else {
+        pOrS = "subscribers/PulseWisSubscriber";
+      }
+      return `${app}/${pant}/${pOrS}`;
     },
     getPulseReaderURL: function() {
-      return this.getBaseURL() + "/data_readers/PatientPulseReader";
+      return this.getBaseURL(false) + "/data_readers/PatientPulseReader";
     },
     getPatientInfoReaderURL: function() {
-      return this.getBaseURL() + "/data_readers/PatientInfoReader";
+      return this.getBaseURL(false) + "/data_readers/PatientInfoReader";
     },
+    getConfigWriterURL: function() {
+      return this.getBaseURL(true) + "/data_writers/PatientConfigWriter";
+    },
+    /**
+     * Sets up a new chart. This method needs to be called before reading or drawing ecg info.
+     */
     setupScenario: function() {
-        this.chart_config = {
+        this.chartConfig = {
             type: 'line',
+		    scale: { xScalePaddingLeft: 0, xScalePaddingRight: 0},
             data: {
                 labels: [],
+		//defaultFontSize: 20,
                 datasets: [{
                     label: "Pulse",
                     backgroundColor: 'rgb(255, 99, 132)',
@@ -54,7 +67,8 @@ rti.pulseapp = {
                 }],
             },
             options: {
-                animation: {duration: 0 },
+                animation: {duration: 0 }, // speeds up display
+		events: [], // disable hover and tooltip behavior
                 title: {
                     display: false,
                     text: 'Pulse Graph',
@@ -62,18 +76,27 @@ rti.pulseapp = {
                 legend: {
                     display: false
                 },
+		    layout: {
+		    padding: {
+			left: -2, right: 10, top: 20, bottom: 30
+			},
+		},
                 scales: {
                     xAxes: [{
-                        display: false,
-                        //ticks: { min: 0, max: 100, stepSize:1, display: false},
+                        display: true,
+			gridLines: { display: false},
+			
+ 		        ticks: { display: false},
+                        //ticks: { min:0, max:100, stepSize:1, display: false},
                         scaleLabel: {
-                            display: false,
-                            labelString: 'Time'
+                            display: true,
+                            labelString: 'Some Patient',
+ 			    //padding: { top: 0, bottom: 0},
                         }
                     }],
                     yAxes: [{
-                        display: false,
-			            ticks: { min: 0, max: 1050, stepSize:50, display: false },
+                        display: true,
+			//ticks: { min:0, max:1050, stepSize:50, display:false},
                         scaleLabel: {
                             display: false,
                             labelString: 'Value'
@@ -83,14 +106,13 @@ rti.pulseapp = {
             }
         };
 
-
         context = document.getElementById('canvas').getContext('2d');
-        this.lineChart = new Chart(context, this.chart_config);
+        this.lineChart = new Chart(context, this.chartConfig);
 
         for (i=0; i< this.X_POINT_COUNT; i++){
-            // prefill the chart with gray nominal data
-            this.chart_config.data.labels.push(null);
-            this.chart_config.data.datasets[0].data.push(500);
+            // prefill the chart with gray nominal data (autoscales)
+            this.chartConfig.data.labels.push(null);
+            this.chartConfig.data.datasets[0].data.push(500);
         };
 
         let url = this.getPatientInfoReaderURL();
@@ -102,12 +124,19 @@ rti.pulseapp = {
 	        rti.pulseapp.updatePatientInfo(info[0]);
 	    }
         });
+
+	/* Button handlers */
+        document.getElementById("btn50").addEventListener("click", function() { rti.pulseapp.write(50, 1);}, false);
+        document.getElementById("btn100").addEventListener("click", function() { rti.pulseapp.write(100, 2);}, false);
+        document.getElementById("btn200").addEventListener("click", function() { rti.pulseapp.write(200, 3);}, false); 
     },
     updatePatientInfo(data) {
         // console.log(data);
         const PATIENT_ITEM = document.getElementById('patientNameId');
-        let name = `${data.data.FirstName} ${data.data.LastName} &nbsp; &nbsp; Age: ${data.data.Age}`;
-        PATIENT_ITEM.innerHTML = name;
+        let html_name = `${data.data.FirstName} ${data.data.LastName} &nbsp; &nbsp; Age: ${data.data.Age}`;
+        PATIENT_ITEM.innerHTML = html_name;
+        let name = `${data.data.FirstName} ${data.data.LastName}     Age: ${data.data.Age}`;
+	this.chartConfig.options.scales.xAxes[0].scaleLabel.labelString = name;
     },
     /**
      *  The method will call the methods that update the display at 33 ms intervals.
@@ -126,7 +155,7 @@ rti.pulseapp = {
                 url,
                 {
                     sampleFormat: "json",
-                    removeFromReaderCache: "false"
+                    removeFromReaderCache: "true"
                 },
                 function(data) {
 		    if (data) {
@@ -143,17 +172,17 @@ rti.pulseapp = {
      */
 
     updateChart: function(sampleSeq) {
-        var chart_data = this.chart_config.data.datasets[0].data;
-        var chart_labels = this.chart_config.data.labels;
+        var chartData = this.chartConfig.data.datasets[0].data;
+        var chartLabels = this.chartConfig.data.labels;
         var x_point = this.X_POINT_COUNT; // not sure why I have to rescope this
-        var line_chart = this.lineChart;
+        var lineChart = this.lineChart;
 
         const COUNT_ITEM = document.getElementById("countId");
         COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.getCount();
         
         // how to change the line color in time (can also be changed by value condition)
-        // line_chart.config.data.datasets[0].borderColor="rgb(255, 99, 132)";
-        // line_chart.config.data.datasets[0].backgroundColor="rgb(255, 99, 132)";
+        // lineChart.config.data.datasets[0].borderColor="rgb(255, 99, 132)";
+        // lineChart.config.data.datasets[0].backgroundColor="rgb(255, 99, 132)";
     
 
         sampleSeq.forEach(function(sample, i, samples) {
@@ -171,25 +200,25 @@ rti.pulseapp = {
 
             // If we received an invalid data sample, and the instance state
             // is != ALIVE, then the instance has been either disposed or
-            // unregistered and we remove the shape from the canvas.
+            // unregistered and we ignore the sample.
             if (valid_data && (instance_state == "ALIVE")) {
-                    // console.log(chart_data.length);
+                    // console.log(chartData.length);
                     // console.log(sample.data.readings.length);
                     // console.log(sample.data);
 
                     sample.data.readings.forEach(function(reading, index){
-                        index += index;
+                        //index += index;
 
-                        chart_labels.shift();
-                        chart_data.shift();
+                        chartLabels.shift();
+                        chartData.shift();
 
                         if (reading < 100) { reading = 500;} //- simple filter to get rid of spikes in the data
                         // Better to fix this at the source (not the browser) or integrate the sample more.
-                        chart_labels.push(null);
-                        chart_data.push(reading);
+                        chartLabels.push(null);
+                        chartData.push(reading);
                     });
 
-                    line_chart.update();
+                    lineChart.update();
 
                     var value = sample.data.bpm;
                     var elementHb = document.getElementById("heartbeatValue");
@@ -198,4 +227,30 @@ rti.pulseapp = {
             }
         });
     },
+
+	/* Write some value back on the PatientConfig topic
+	 */
+    write: function(highValue, lowValue) {
+      var configURL = this.getConfigWriterURL();
+        var configData = { 
+	  "Id": { "Id": "iamGroot", },
+	  "PulseHighThreshold": highValue,
+	  "PulseLowThreshold": lowValue,
+	};
+
+	var configDataJSON = JSON.stringify(configData);
+	console.log(configDataJSON);
+
+        $.ajax({
+          url:configURL,
+          type:"POST",
+          data:configDataJSON,
+          contentType:"application/dds-web+json",
+          dataType:"json",
+          success: function(param){
+            console.log("sent " + configDataJSON);
+		 
+          }
+        });
+    }, 
 }
