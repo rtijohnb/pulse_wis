@@ -22,6 +22,7 @@ rti.pulseapp = {
     updateCount: 0,
     emptyCount: 0,
     lineChart: null,
+    prevSampleTimestamp: -1, /* keep track of previous sample ts to filter out dups now that we read() vs. take() */
     bumpEmptyCount: function() { this.emptyCount++; return this.emptyCount; },
     getUpdateCount: function() { this.updateCount++; return this.updateCount; },
     getPatientId: function() { return this.patientId;},
@@ -55,7 +56,7 @@ rti.pulseapp = {
 		    scale: { xScalePaddingLeft: 0, xScalePaddingRight: 0},
             data: {
                 labels: [],
-		//defaultFontSize: 20,
+		        //defaultFontSize: 20,
                 datasets: [{
                     label: "Pulse",
                     backgroundColor: 'rgb(255, 99, 132)',
@@ -175,7 +176,6 @@ rti.pulseapp = {
         var chartData = this.chartConfig.data.datasets[0].data;
         var chartLabels = this.chartConfig.data.labels;
         var lineChart = this.lineChart;
-        var prev_sample_timestamp = -1;
 
         const COUNT_ITEM = document.getElementById("countId");
         COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.getUpdateCount();
@@ -199,14 +199,13 @@ rti.pulseapp = {
             //var averageReading;
 
             //console.log("sample received:", reception_time);
-
             // If we received an invalid data sample, and the instance state
             // is != ALIVE, then the instance has been either disposed or
             // unregistered and we ignore the sample.
             if (valid_data && (instance_state == "ALIVE") && 
-                    (sample.data.timestamp != this.prev_sample_timestamp)) {
-                    this.prev_sample_timestamp = sample.data.timestamp;
-                    // console.log(this.prev_sample_timestamp);
+                (sample.data.timestamp != rti.pulseapp.prevSampleTimestamp)) {
+                    rti.pulseapp.prevSampleTimestamp = sample.data.timestamp;
+                    // console.log(sample.data.timestamp);
                     // console.log(chartData.length);
                     // console.log(sample.data.readings.length);
                     // console.log(sample.data.readings);
@@ -219,13 +218,12 @@ rti.pulseapp = {
                         chartLabels.shift();
                         chartData.shift();
 
-			//console.log(reception_time.sec);
-		        let dt = new Date (reception_time.sec * 1000);
+			            //console.log(reception_time.sec);
+		                let dt = new Date (reception_time.sec * 1000);
                         chartLabels.push(('00'+dt.getMinutes()).slice(-2) + ':' + 
 				         ('00'+dt.getSeconds()).slice(-2));
                         chartData.push(reading);
                     });
-
                     lineChart.update();
 
                     var value = sample.data.bpm;
