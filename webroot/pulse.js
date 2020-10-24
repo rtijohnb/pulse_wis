@@ -19,12 +19,11 @@ rti.pulseapp = {
     X_POINT_COUNT: 500,
     patientId: null,
     chartConfig: {},
-    cnt: 0,
+    updateCount: 0,
+    emptyCount: 0,
     lineChart: null,
-    getCount: function() {
-        this.cnt += 1;
-        return this.cnt;
-    },
+    bumpEmptyCount: function() { this.emptyCount++; return this.emptyCount; },
+    getUpdateCount: function() { this.updateCount++; return this.updateCount; },
     getPatientId: function() { return this.patientId;},
     setPatientId: function(id) { this.patientId = id; },
     getBaseURL: function(is_pub) {
@@ -89,7 +88,7 @@ rti.pulseapp = {
  		        ticks: { display: false},
                         //ticks: { min:0, max:100, stepSize:1, display: false},
                         scaleLabel: {
-                            display: true,
+                            display: false,
                             labelString: 'Some Patient',
  			    //padding: { top: 0, bottom: 0},
                         }
@@ -111,7 +110,7 @@ rti.pulseapp = {
 
         for (i=0; i< this.X_POINT_COUNT; i++){
             // prefill the chart with gray nominal data (autoscales)
-            this.chartConfig.data.labels.push(null);
+            this.chartConfig.data.labels.push('0:00');
             this.chartConfig.data.datasets[0].data.push(500);
         };
 
@@ -125,18 +124,20 @@ rti.pulseapp = {
 	    }
         });
 
-	/* Button handlers */
+	/* Button handlers 
         document.getElementById("btn50").addEventListener("click", function() { rti.pulseapp.write(50, 1);}, false);
         document.getElementById("btn100").addEventListener("click", function() { rti.pulseapp.write(100, 2);}, false);
         document.getElementById("btn200").addEventListener("click", function() { rti.pulseapp.write(200, 3);}, false); 
+	*/
     },
     updatePatientInfo(data) {
         // console.log(data);
         const PATIENT_ITEM = document.getElementById('patientNameId');
         let html_name = `${data.data.FirstName} ${data.data.LastName} &nbsp; &nbsp; Age: ${data.data.Age}`;
         PATIENT_ITEM.innerHTML = html_name;
-        let name = `${data.data.FirstName} ${data.data.LastName}     Age: ${data.data.Age}`;
-	this.chartConfig.options.scales.xAxes[0].scaleLabel.labelString = name;
+        // remove name/age from chart canvas, showing in HTML
+	//let name = `${data.data.FirstName} ${data.data.LastName}     Age: ${data.data.Age}`;
+	//this.chartConfig.options.scales.xAxes[0].scaleLabel.labelString = name;
     },
     /**
      *  The method will call the methods that update the display at 33 ms intervals.
@@ -159,7 +160,9 @@ rti.pulseapp = {
                 },
                 function(data) {
 		    if (data) {
-                        rti.pulseapp.updateChart(data); /* ecgPulse topic name */
+                        rti.pulseapp.updateChart(data); 
+		    } else {
+ 		        console.log('got empty data' + this.bumpEmptyCnt());
 		    }
                 }
             );
@@ -174,11 +177,10 @@ rti.pulseapp = {
     updateChart: function(sampleSeq) {
         var chartData = this.chartConfig.data.datasets[0].data;
         var chartLabels = this.chartConfig.data.labels;
-        var x_point = this.X_POINT_COUNT; // not sure why I have to rescope this
         var lineChart = this.lineChart;
 
         const COUNT_ITEM = document.getElementById("countId");
-        COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.getCount();
+        COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.getUpdateCount();
         
         // how to change the line color in time (can also be changed by value condition)
         // lineChart.config.data.datasets[0].borderColor="rgb(255, 99, 132)";
@@ -190,13 +192,14 @@ rti.pulseapp = {
             
             // console.log("sample", sample);
             // console.log(sample.data.readings.length);
-            var valid_data = sample.read_sample_info.valid_data;
-            var instance_handle = sample.read_sample_info.instance_handle;
-            var instance_state  = sample.read_sample_info.instance_state;
-            var reception_time  = sample.read_sample_info.source_timestamp;
-            var averageReading;
+	    var info = sample.read_sample_info;
+            var valid_data = info.valid_data;
+            var instance_handle = info.instance_handle;
+            var instance_state  = info.instance_state;
+            var reception_time  = info.source_timestamp;
+            //var averageReading;
 
-            // console.log("sample received:", reception_time);
+            //console.log("sample received:", reception_time);
 
             // If we received an invalid data sample, and the instance state
             // is != ALIVE, then the instance has been either disposed or
@@ -204,17 +207,20 @@ rti.pulseapp = {
             if (valid_data && (instance_state == "ALIVE")) {
                     // console.log(chartData.length);
                     // console.log(sample.data.readings.length);
-                    // console.log(sample.data);
+                    // console.log(sample.data.readings);
 
                     sample.data.readings.forEach(function(reading, index){
                         //index += index;
+                        if (reading < 100) { return; } //- return from this sample - simple filter to get rid of spikes in the data
+                        // Better to fix this at the source (not the browser) or integrate the sample more.
 
                         chartLabels.shift();
                         chartData.shift();
 
-                        if (reading < 100) { reading = 500;} //- simple filter to get rid of spikes in the data
-                        // Better to fix this at the source (not the browser) or integrate the sample more.
-                        chartLabels.push(null);
+			//console.log(reception_time.sec);
+		        let dt = new Date (reception_time.sec * 1000);
+                        chartLabels.push(('00'+dt.getMinutes()).slice(-2) + ':' + 
+				         ('00'+dt.getSeconds()).slice(-2));
                         chartData.push(reading);
                     });
 
@@ -229,7 +235,7 @@ rti.pulseapp = {
     },
 
 	/* Write some value back on the PatientConfig topic
-	 */
+	 * INACTIVE
     write: function(highValue, lowValue) {
       var configURL = this.getConfigWriterURL();
         var configData = { 
@@ -252,5 +258,5 @@ rti.pulseapp = {
 		 
           }
         });
-    }, 
+    }, */ 
 }
