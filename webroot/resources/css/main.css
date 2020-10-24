@@ -9,7 +9,7 @@ body {
 /* scaling of the graph background image needs improvement */
 canvas {
 	background: url('/resources/img/rti_background.png');
-	padding: 0;
+	padding: 0;   /* controls whitespace around graph withint the container */
 	background-position: center;
 	background-repeat: no-repeat;
 	margin: 0;

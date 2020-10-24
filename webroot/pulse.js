@@ -67,7 +67,7 @@ rti.pulseapp = {
             },
             options: {
                 animation: {duration: 0 }, // speeds up display
-		events: [], // disable hover and tooltip behavior
+		        events: [], // disable hover and tooltip behavior
                 title: {
                     display: false,
                     text: 'Pulse Graph',
@@ -75,27 +75,24 @@ rti.pulseapp = {
                 legend: {
                     display: false
                 },
-		    layout: {
-		    padding: {
-			left: -2, right: 10, top: 20, bottom: 30
-			},
-		},
+		        layout: {
+		            padding: {
+			            left: -2, right: 10, top: 20, bottom: 30
+			        },
+		        },
                 scales: {
                     xAxes: [{
                         display: true,
-			gridLines: { display: false},
-			
- 		        ticks: { display: false},
-                        //ticks: { min:0, max:100, stepSize:1, display: false},
+			            gridLines: { display: false},
+ 		                ticks: { display: false},
                         scaleLabel: {
                             display: false,
                             labelString: 'Some Patient',
- 			    //padding: { top: 0, bottom: 0},
                         }
                     }],
                     yAxes: [{
                         display: true,
-			//ticks: { min:0, max:1050, stepSize:50, display:false},
+			            //ticks: { min:0, max:1050, stepSize:50, display:false},
                         scaleLabel: {
                             display: false,
                             labelString: 'Value'
@@ -136,8 +133,8 @@ rti.pulseapp = {
         let html_name = `${data.data.FirstName} ${data.data.LastName} &nbsp; &nbsp; Age: ${data.data.Age}`;
         PATIENT_ITEM.innerHTML = html_name;
         // remove name/age from chart canvas, showing in HTML
-	//let name = `${data.data.FirstName} ${data.data.LastName}     Age: ${data.data.Age}`;
-	//this.chartConfig.options.scales.xAxes[0].scaleLabel.labelString = name;
+	    //let name = `${data.data.FirstName} ${data.data.LastName}     Age: ${data.data.Age}`;
+	    //this.chartConfig.options.scales.xAxes[0].scaleLabel.labelString = name;
     },
     /**
      *  The method will call the methods that update the display at 33 ms intervals.
@@ -145,7 +142,7 @@ rti.pulseapp = {
     read: function() {
         var url = this.getPulseReaderURL();
 
-        var chartUpdateIntervalPeriod = 1000; // in milliseconds
+        var chartUpdateIntervalPeriod = 500; // in milliseconds 2x data rate
 
         // Call chartjs() for ecgPulse and bpm every ecgReadIntervalPeriod, passing the data resulting
         // for reading new samples of the appropriate topic in json format without deleting the samples
@@ -156,7 +153,7 @@ rti.pulseapp = {
                 url,
                 {
                     sampleFormat: "json",
-                    removeFromReaderCache: "true"
+                    removeFromReaderCache: "false"
                 },
                 function(data) {
 		    if (data) {
@@ -178,6 +175,7 @@ rti.pulseapp = {
         var chartData = this.chartConfig.data.datasets[0].data;
         var chartLabels = this.chartConfig.data.labels;
         var lineChart = this.lineChart;
+        var prev_sample_timestamp = -1;
 
         const COUNT_ITEM = document.getElementById("countId");
         COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.getUpdateCount();
@@ -192,7 +190,8 @@ rti.pulseapp = {
             
             // console.log("sample", sample);
             // console.log(sample.data.readings.length);
-	    var info = sample.read_sample_info;
+
+	        var info = sample.read_sample_info;
             var valid_data = info.valid_data;
             var instance_handle = info.instance_handle;
             var instance_state  = info.instance_state;
@@ -204,7 +203,10 @@ rti.pulseapp = {
             // If we received an invalid data sample, and the instance state
             // is != ALIVE, then the instance has been either disposed or
             // unregistered and we ignore the sample.
-            if (valid_data && (instance_state == "ALIVE")) {
+            if (valid_data && (instance_state == "ALIVE") && 
+                    (sample.data.timestamp != this.prev_sample_timestamp)) {
+                    this.prev_sample_timestamp = sample.data.timestamp;
+                    // console.log(this.prev_sample_timestamp);
                     // console.log(chartData.length);
                     // console.log(sample.data.readings.length);
                     // console.log(sample.data.readings);
