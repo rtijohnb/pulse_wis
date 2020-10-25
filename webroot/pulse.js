@@ -19,15 +19,21 @@ rti.pulseapp = {
     X_POINT_COUNT: 500,
     patientId: null,
     chartConfig: {},
-    updateCount: 0,
-    emptyCount: 0,
+    counts: {
+      updateCount: 0, emptyCount: 0,
+      sampleCount: 0, totalSampleCount: 0,
+    },
     lineChart: null,
-    prevSampleTimestamp: -1, /* keep track of previous sample ts to filter out dups now that we read() vs. take() */
-    bumpEmptyCount: function() { this.emptyCount++; return this.emptyCount; },
-    bumpUpdateCount: function() { this.updateCount++; return this.updateCount; },
-    getUpdateCount: function() { return this.updateCount; },
+    bumpEmptyCount:  function() { this.counts.emptyCount++;  return this.counts.emptyCount; },
+    bumpUpdateCount: function() { this.counts.updateCount++; return this.counts.updateCount; },
+    getUpdateCount:  function() { return this.counts.updateCount; },
+    getSampleCount:  function() { return this.counts.sampleCount; },
+    getTotalSampleCount: function() { return this.counts.totalSampleCount; },
+    setSampleCount: function(n) { this.counts.sampleCount = n; this.counts.totalSampleCount += n; return this.counts.sampleCount; },
+
     getPatientId: function() { return this.patientId;},
     setPatientId: function(id) { this.patientId = id; },
+
     getBaseURL: function(is_pub) {
       var app = "/dds/rest1/applications/PulseWisApp";
       var pant = "domain_participants/PulseWisParticipant";
@@ -152,7 +158,7 @@ rti.pulseapp = {
     read: function() {
         var url = this.getPulseReaderURL();
 
-        var chartUpdateIntervalPeriod = 500; // in milliseconds 2x data rate
+        var chartUpdateIntervalPeriod = 2000; // in milliseconds 2x data rate
 
         // Call chartjs() for ecgPulse and bpm every ecgReadIntervalPeriod, passing the data resulting
         // for reading new samples of the appropriate topic in json format without deleting the samples
@@ -187,9 +193,6 @@ rti.pulseapp = {
         var chartLabels = this.chartConfig.data.labels;
         var lineChart = this.lineChart;
 
-        const COUNT_ITEM = document.getElementById("countId");
-        COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.bumpUpdateCount();
-        
         // how to change the line color in time (can also be changed by value condition)
         // lineChart.config.data.datasets[0].borderColor="rgb(255, 99, 132)";
         // lineChart.config.data.datasets[0].backgroundColor="rgb(255, 99, 132)";
@@ -207,13 +210,14 @@ rti.pulseapp = {
             var instance_state  = info.instance_state;
             var reception_time  = info.source_timestamp;
             //var averageReading;
+            rti.pulseapp.setSampleCount(sample.data.readings.length);
 
             //console.log("sample received:", reception_time);
             // If we received an invalid data sample, and the instance state
             // is != ALIVE, then the instance has been either disposed or
             // unregistered and we ignore the sample.
-            if (valid_data && (instance_state == "ALIVE") && 
-                (sample.data.timestamp != rti.pulseapp.prevSampleTimestamp)) {
+            if (valid_data && (instance_state == "ALIVE")) {
+                if (sample.data.timestamp != rti.pulseapp.prevSampleTimestamp) {
                     rti.pulseapp.prevSampleTimestamp = sample.data.timestamp;
                     // console.log(sample.data.timestamp);
                     // console.log(chartData.length);
@@ -245,8 +249,16 @@ rti.pulseapp = {
                     var value = sample.data.bpm;
                     var elementHb = document.getElementById("heartbeatValue");
                     elementHb.innerHTML = value;
-
+	            console.log("keep ts " + sample.data.timestamp + " rec: " + info.source_timestamp.sec);
+	        } else {
+	            console.log("drop ts " + sample.data.timestamp + " rec: " + info.source_timestamp.sec);
+	        }
             }
+		            
+            const COUNT_ITEM = document.getElementById("countId");
+            COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.bumpUpdateCount() +
+			           " sample count: " + rti.pulseapp.getSampleCount() +
+			           " total samples: " + rti.pulseapp.getTotalSampleCount();
         });
                         lineChart.update();
     },
