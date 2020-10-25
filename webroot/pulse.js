@@ -24,7 +24,8 @@ rti.pulseapp = {
     lineChart: null,
     prevSampleTimestamp: -1, /* keep track of previous sample ts to filter out dups now that we read() vs. take() */
     bumpEmptyCount: function() { this.emptyCount++; return this.emptyCount; },
-    getUpdateCount: function() { this.updateCount++; return this.updateCount; },
+    bumpUpdateCount: function() { this.updateCount++; return this.updateCount; },
+    getUpdateCount: function() { return this.updateCount; },
     getPatientId: function() { return this.patientId;},
     setPatientId: function(id) { this.patientId = id; },
     getBaseURL: function(is_pub) {
@@ -64,10 +65,17 @@ rti.pulseapp = {
                     data: [],
                     fill: false,
                     pointRadius:1, // removes the dots, default: 3
+                }, {
+                    label: "bar",
+                    backgroundColor: 'rgba(200,200,200,1)',
+                    borderColor: 'rgba(200,200,200,1)',
+                    data: [],
+                    fill: true,
+                    pointRadius:1, // removes the dots, default: 3
                 }],
             },
             options: {
-                animation: {duration: 0 }, // speeds up display
+		    animation: {duration: 0 }, 
 		        events: [], // disable hover and tooltip behavior
                 title: {
                     display: false,
@@ -110,6 +118,7 @@ rti.pulseapp = {
             // prefill the chart with gray nominal data (autoscales)
             this.chartConfig.data.labels.push('0:00');
             this.chartConfig.data.datasets[0].data.push(500);
+            this.chartConfig.data.datasets[1].data.push(500);
         };
 
         let url = this.getPatientInfoReaderURL();
@@ -174,11 +183,12 @@ rti.pulseapp = {
 
     updateChart: function(sampleSeq) {
         var chartData = this.chartConfig.data.datasets[0].data;
+        var barData   = this.chartConfig.data.datasets[1].data;
         var chartLabels = this.chartConfig.data.labels;
         var lineChart = this.lineChart;
 
         const COUNT_ITEM = document.getElementById("countId");
-        COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.getUpdateCount();
+        COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.bumpUpdateCount();
         
         // how to change the line color in time (can also be changed by value condition)
         // lineChart.config.data.datasets[0].borderColor="rgb(255, 99, 132)";
@@ -191,7 +201,7 @@ rti.pulseapp = {
             // console.log("sample", sample);
             // console.log(sample.data.readings.length);
 
-	        var info = sample.read_sample_info;
+	    var info = sample.read_sample_info;
             var valid_data = info.valid_data;
             var instance_handle = info.instance_handle;
             var instance_state  = info.instance_state;
@@ -217,14 +227,20 @@ rti.pulseapp = {
 
                         chartLabels.shift();
                         chartData.shift();
+			barData.shift();
 
 			            //console.log(reception_time.sec);
-		                let dt = new Date (reception_time.sec * 1000);
+		        let dt = new Date (reception_time.sec * 1000);
                         chartLabels.push(('00'+dt.getMinutes()).slice(-2) + ':' + 
 				         ('00'+dt.getSeconds()).slice(-2));
                         chartData.push(reading);
+			if (rti.pulseapp.getUpdateCount() % 2) {
+				barData.push(200);
+			} else {
+				barData.push(999);
+			}
+
                     });
-                    lineChart.update();
 
                     var value = sample.data.bpm;
                     var elementHb = document.getElementById("heartbeatValue");
@@ -232,6 +248,7 @@ rti.pulseapp = {
 
             }
         });
+                        lineChart.update();
     },
 
 	/* Write some value back on the PatientConfig topic
