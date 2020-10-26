@@ -5,9 +5,9 @@
     <!--
         Note that WIS doesn't like including the system designer config file directly, and
 		didn't like the "module" definitions, or the references that stem from the modul-ization
-		of the types in that file.  SO I peeled out the types, de-modulified them and stored
-		the result in this "MedicalDemoTypes.xml" file for configuring type information for 
-		this WIS instance...
+		of the types in that file.  SO the following types were peeled out of the System Designer
+		configuration file, de-modulified them and stored in "MedicalDemoTypes.xml" file for
+		configuring type information for this WIS instance...
     -->
     <types>
         <include file="MedicalDemoTypes.xml" />
