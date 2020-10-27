@@ -38,24 +38,38 @@
                 <topic name="PatientConfigTopic" register_type_ref="PatientConfig" />
 
                 <subscriber name="PulseWisSubscriber">
-                    <data_reader name="PatientPulseReader" topic_ref="PatientPulseTopic"/>
-					<!-- ***!!! WIS doesn't like this particular QoS "inconsistent QoS policy"!!!***
-                        <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::Periodic_Reliable"/>
+
+                    <data_reader name="PatientPulseReader" topic_ref="PatientPulseTopic">
+					    <datareader_qos>
+                            <history>
+                                <kind>KEEP_LAST_HISTORY_QOS</kind>
+                                <depth>6</depth>
+                            </history>
+						    <!-- !!!ToDo: update as required -->
+						</datareader_qos>
 					</data_reader>
-                    -->
-                    <data_reader name="PatientInfoReader" topic_ref="PatientInfoTopic"/>
-					<!--
-                        <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::Alarms_Events"/>
-                    </data_reader>
-					-->
+
+                    <data_reader name="PatientInfoReader" topic_ref="PatientInfoTopic">
+					    <datareader_qos>
+                            <history>
+                                <kind>KEEP_LAST_HISTORY_QOS</kind>
+                                <depth>6</depth>
+                            </history>
+						    <!-- !!!ToDo: update as required -->
+						</datareader_qos>
+					</data_reader>
+
                 </subscriber>
 
                 <publisher name="PulseWisPublisher">
                     <data_writer name="PatientConfigWriter" topic_ref="PatientConfigTopic">
-					<!--
-                        <datawriter_qos base_name="RTI_Eval_Qos_Library_1_0::Command_Response"/>
-                    </data_reader>
-					-->
+                        <datawriter_qos>
+                            <history>
+                                <kind>KEEP_LAST_HISTORY_QOS</kind>
+                                <depth>6</depth>
+                            </history>
+						    <!-- !!!ToDo: update as required -->
+                        </datawriter_qos>
 					</data_writer>
                 </publisher>
 
