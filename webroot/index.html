@@ -36,8 +36,9 @@
             <td style="background-color:black">
                 <div class="text-left">
                     <span class="heartInfoDisplayText" style="color:orange">
-                    <div style="font-weight:normal; display:inline-block;"> Heartbeat: </div>
+                    <div style="font-weight:normal; display:inline-block;"> Pulse Rate: </div>
                     <div id="heartbeatValue" style="font-family:monospace; display:inline-block;"> 100 </div>
+                    <div style="font-weight:normal; font-size: small; display:inline-block;"> bpm </div>
                     </span>
                 </div>
             </td>
@@ -70,24 +71,41 @@
         </div>
     </div>
 
-    <p style="text-align:center" class="patient" id="patientNameId"> placeholder name
-    </p>
+    <!-- Name was moved onto the Chart x axis-->
+    <!-- <p style="text-align:center" class="patient" id="patientNameId"> placeholder name </p> -->
 
     <p style="text-align:center" class="patient" id="countId"> placeholder count 
     </p>
 
-    <!-- <div style="text-align:center" >
-    <input value="200" type="button" class="btn btn-large btn-success" id="btn200">  </a>
-    <input value="100" type="button" class="btn btn-large " id="btn100">  </a>
-    <input value="50 [alt-shift-f]" type="button" accesskey="f" class="btn btn-large btn-success" id="btn50"> </a>
-    </div> -->
+    <table class="center" >
+      <tr> 
+        <td> <input value="+20" type="button" class="btn btn-rounded btn-success" id="btnHighUpId"></a></td>
+        <td></td>
+	<td> <input value="+20" type="button" class="btn btn-rounded btn-success" id="btnLowUpId"></a></td>
+      </tr>
+      <tr>
+	<td><h3 id="highValueId">777 </h3> </td>
+	<td></td>
+        <td><h3 id="lowValueId">888 </h3> </td>
+      </tr>
+      <tr>
+        <td><input value="-20" type="button" class="btn btn-rounded btn-danger" id="btnHighDownId"></a></td>
+        <td></td>
+	<td><input value="-20" type="button" class="btn btn-rounded btn-danger" id="btnLowDownId"></a></td>
+      </tr>
+      <tr> 
+        <td><h3 id="highLabelid">High</h3> </td>
+  	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	<td><h3 id="lowhLabelid">Low</h3> </td>
+      </tr>
+    </table>
 
     <script>
         (function () {
         // Start reading the data
         // Setup scenario and start heartbeat info
         rti.pulseapp.setupScenario();
-        rti.pulseapp.read();
+        rti.pulseapp.run();
 
         })();
     </script>

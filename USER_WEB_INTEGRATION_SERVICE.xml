@@ -44,6 +44,7 @@
 					</data_reader>
                     -->
                     <data_reader name="PatientInfoReader" topic_ref="PatientInfoTopic"/>
+                    <data_reader name="PatientConfigReader" topic_ref="PatientConfigTopic"/>
 					<!--
                         <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::Alarms_Events"/>
                     </data_reader>

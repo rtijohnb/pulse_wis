@@ -15,9 +15,14 @@ var rti = rti || {};
 /**
  * @namespace rti.pulse
  */
+
 rti.pulseapp = {
-    X_POINT_COUNT: 500,
+    X_POINT_COUNT: 1000,
     patientId: null,
+    patientConfig: {
+      high: 200, 
+      low: 50,
+    },
     chartConfig: {},
     counts: {
       updateCount: 0, emptyCount: 0,
@@ -31,9 +36,7 @@ rti.pulseapp = {
     getTotalSampleCount: function() { return this.counts.totalSampleCount; },
     setSampleCount: function(n) { this.counts.sampleCount = n; this.counts.totalSampleCount += n; return this.counts.sampleCount; },
 
-    getPatientId: function() { return this.patientId;},
     setPatientId: function(id) { this.patientId = id; },
-
     getBaseURL: function(is_pub) {
       var app = "/dds/rest1/applications/PulseWisApp";
       var pant = "domain_participants/PulseWisParticipant";
@@ -48,10 +51,13 @@ rti.pulseapp = {
     getPulseReaderURL: function() {
       return this.getBaseURL(false) + "/data_readers/PatientPulseReader";
     },
+    getPatientConfigReaderURL: function() {
+      return this.getBaseURL(false) + "/data_readers/PatientConfigReader";
+    },
     getPatientInfoReaderURL: function() {
       return this.getBaseURL(false) + "/data_readers/PatientInfoReader";
     },
-    getConfigWriterURL: function() {
+    getPatientConfigWriterURL: function() {
       return this.getBaseURL(true) + "/data_writers/PatientConfigWriter";
     },
     /**
@@ -101,8 +107,8 @@ rti.pulseapp = {
 			            gridLines: { display: false},
  		                ticks: { display: false},
                         scaleLabel: {
-                            display: false,
-                            labelString: 'Some Patient',
+                            display: true,
+                            labelString: '', //'Some Patient',
                         }
                     }],
                     yAxes: [{
@@ -124,42 +130,103 @@ rti.pulseapp = {
             // prefill the chart with gray nominal data (autoscales)
             this.chartConfig.data.labels.push('0:00');
             this.chartConfig.data.datasets[0].data.push(500);
-            this.chartConfig.data.datasets[1].data.push(500);
+            // 2nd dataset is for sample highlight bars
+    	    // this.chartConfig.data.datasets[1].data.push(500);
         };
 
+	/* Button handlers  */
+        document.getElementById("btnHighUpId").addEventListener(
+ 	    "click", 
+   	    function() { 
+		rti.pulseapp.writePatientConfig(rti.pulseapp.patientConfig.high+20, rti.pulseapp.patientConfig.low);
+	    }, 
+   	    false
+	);
+        document.getElementById("btnHighDownId").addEventListener(
+		"click", 
+		function() { 
+			rti.pulseapp.writePatientConfig(rti.pulseapp.patientConfig.high-20, rti.pulseapp.patientConfig.low);
+		}, 
+		false
+	);
+        document.getElementById("btnLowUpId").addEventListener(
+ 	    "click", 
+   	    function() { 
+		rti.pulseapp.writePatientConfig(rti.pulseapp.patientConfig.high, rti.pulseapp.patientConfig.low+20);
+	    }, 
+   	    false
+	);
+        document.getElementById("btnLowDownId").addEventListener(
+		"click", 
+		function() { 
+			rti.pulseapp.writePatientConfig(rti.pulseapp.patientConfig.high, rti.pulseapp.patientConfig.low-20);
+		}, 
+		false
+	);
+	    /*
+        document.getElementById("btn50").addEventListener("click", function() { rti.pulseapp.write(50, 1);}, false);
+        document.getElementById("btn100").addEventListener("click", function() { rti.pulseapp.write(100, 2);}, false);
+        document.getElementById("btn200").addEventListener("click", function() { rti.pulseapp.write(200, 3);}, false);  */
+
+	rti.pulseapp.initPatientInfo();
+	rti.pulseapp.initPatientConfig();
+	
+    },
+    initPatientInfo:function() {
         let url = this.getPatientInfoReaderURL();
         $.getJSON(
           url,
-          { sampleFormat:"json"},
+          { sampleFormat:"json", removeFromReaderCache: "false"}, 
           function(info) {
             if (info && info.length) {
 	        rti.pulseapp.updatePatientInfo(info[0]);
 	    }
-        });
+          }
+	);
+    }, 
+    initPatientConfig:function() {
+	// first browser to connect will publish the default value
+        let url = this.getPatientConfigReaderURL();
+        $.getJSON(
+          url,
+          { sampleFormat:"json", removeFromReaderCache: "false"}, 
+          function(samples) {
+	    let data;
+	    if (samples && samples.length) {
+	        data = samples[0].data;
+	    } else {
+                rti.pulseapp.writePatientConfig(rti.pulseapp.patientConfig.high, rti.pulseapp.patientConfig.low);
+		data = {
+		    "PulseHighThreshold": rti.pulseapp.patientConfig.high,
+		    "PulseLowThreshold":  rti.pulseapp.patientConfig.low,
+		};
+	    }
+            rti.pulseapp.updatePatientConfig(data.PulseHighThreshold, data.PulseLowThreshold);
+          }
+	);
+    }, 
 
-	/* Button handlers 
-        document.getElementById("btn50").addEventListener("click", function() { rti.pulseapp.write(50, 1);}, false);
-        document.getElementById("btn100").addEventListener("click", function() { rti.pulseapp.write(100, 2);}, false);
-        document.getElementById("btn200").addEventListener("click", function() { rti.pulseapp.write(200, 3);}, false); 
-	*/
-    },
-    updatePatientInfo(data) {
-        // console.log(data);
-        const PATIENT_ITEM = document.getElementById('patientNameId');
-        let html_name = `${data.data.FirstName} ${data.data.LastName} &nbsp; &nbsp; Age: ${data.data.Age}`;
-        PATIENT_ITEM.innerHTML = html_name;
-        // remove name/age from chart canvas, showing in HTML
-	    //let name = `${data.data.FirstName} ${data.data.LastName}     Age: ${data.data.Age}`;
-	    //this.chartConfig.options.scales.xAxes[0].scaleLabel.labelString = name;
+    updatePatientInfo(sample) {
+        // console.log(sample);
+        // remove name/age from HTML 
+	    // const PATIENT_ITEM = document.getElementById('patientNameId');
+            //let html_name = `${sample.data.FirstName} ${sample.data.LastName} &nbsp; &nbsp; Age: ${sample.data.Age}`;
+            //PATIENT_ITEM.innerHTML = html_name;
+        // show name/age on chart canvas, instead of in HTML
+        let name = `${sample.data.FirstName} ${sample.data.LastName}     Age: ${sample.data.Age}`;
+	this.chartConfig.options.scales.xAxes[0].scaleLabel.labelString = name;
+        console.log('updatePatientInfo: ' + sample.data.Id.Id);
+        this.patientId = sample.data.Id.Id;
     },
     /**
-     *  The method will call the methods that update the display at 33 ms intervals.
+     *  call the methods that update the display 
      */
-    read: function() {
+    run: function() {
         var url = this.getPulseReaderURL();
+        const chartUpdateIntervalPeriod = 2000; // in milliseconds 2x data rate
 
-        var chartUpdateIntervalPeriod = 2000; // in milliseconds 2x data rate
-
+	var configURL = this.getPatientConfigReaderURL();
+	    console.log(configURL);
         // Call chartjs() for ecgPulse and bpm every ecgReadIntervalPeriod, passing the data resulting
         // for reading new samples of the appropriate topic in json format without deleting the samples
         // from the Reader's cache.
@@ -169,16 +236,30 @@ rti.pulseapp = {
                 url,
                 {
                     sampleFormat: "json",
-                    removeFromReaderCache: "false"
+                    removeFromReaderCache: "false",
+		    maxSamples: 10,
                 },
                 function(data) {
 		    if (data) {
                         rti.pulseapp.updateChart(data); 
+			console.log({bpm: data});
 		    } else {
  		        console.log('got empty data' + this.bumpEmptyCnt());
 		    }
                 }
             );
+	// Also update the PatientConfig value
+	    $.getJSON(
+	      configURL,
+	      { sampleFormat:"json", removeFromReaderCache: "false"}, 
+	      function(samples) {
+                console.log('config: ', samples);
+	        if (samples && samples.length) { 
+	          let data = samples[0].data;
+		  rti.pulseapp.updatePatientConfig(data.PulseHighThreshold, data.PulseLowThreshold);
+		}
+	      }
+	    );
         }, chartUpdateIntervalPeriod);
     },
 
@@ -189,7 +270,7 @@ rti.pulseapp = {
 
     updateChart: function(sampleSeq) {
         var chartData = this.chartConfig.data.datasets[0].data;
-        var barData   = this.chartConfig.data.datasets[1].data;
+        //var barData   = this.chartConfig.data.datasets[1].data;
         var chartLabels = this.chartConfig.data.labels;
         var lineChart = this.lineChart;
 
@@ -231,25 +312,26 @@ rti.pulseapp = {
 
                         chartLabels.shift();
                         chartData.shift();
-			barData.shift();
+			//barData.shift();
 
 			            //console.log(reception_time.sec);
 		        let dt = new Date (reception_time.sec * 1000);
                         chartLabels.push(('00'+dt.getMinutes()).slice(-2) + ':' + 
 				         ('00'+dt.getSeconds()).slice(-2));
                         chartData.push(reading);
-			if (rti.pulseapp.getUpdateCount() % 2) {
+			// Enable for bars
+			/*if (rti.pulseapp.getUpdateCount() % 2) {
 				barData.push(200);
 			} else {
 				barData.push(999);
-			}
+			} */
 
                     });
 
                     var value = sample.data.bpm;
                     var elementHb = document.getElementById("heartbeatValue");
                     elementHb.innerHTML = value;
-	            console.log("keep ts " + sample.data.timestamp + " rec: " + info.source_timestamp.sec);
+	            //console.log("keep ts " + sample.data.timestamp + " rec: " + info.source_timestamp.sec);
 	        } else {
 	            console.log("drop ts " + sample.data.timestamp + " rec: " + info.source_timestamp.sec);
 	        }
@@ -262,13 +344,26 @@ rti.pulseapp = {
         });
                         lineChart.update();
     },
+ 
+    /* update the screen's config */
+    updatePatientConfig: function(high, low) {
+        console.log({updatePatientConfig:{high: high, low: low}});
+        rti.pulseapp.patientConfig.high = high;
+        rti.pulseapp.patientConfig.low = low;
+	$("#highValueId").prop("innerHTML", high);
+	$("#lowValueId").prop("innerHTML", low);
 
-	/* Write some value back on the PatientConfig topic
-	 * INACTIVE
-    write: function(highValue, lowValue) {
-      var configURL = this.getConfigWriterURL();
+        $('#btnHighUpId').prop("disabled", high > 250);
+        $('#btnHighDownId').prop("disabled", high < 100);
+        $('#btnLowUpId').prop("disabled", low > 70);
+        $('#btnLowDownId').prop("disabled", low < 30);
+    },
+    /* Write some value back on the PatientConfig topic */
+    writePatientConfig: function(highValue, lowValue) {
+        console.log({writePatientConfig:{ high: highValue, low: lowValue}});
+        const configURL = this.getPatientConfigWriterURL();
         var configData = { 
-	  "Id": { "Id": "iamGroot", },
+	  "Id": { "Id": this.patientId }, 
 	  "PulseHighThreshold": highValue,
 	  "PulseLowThreshold": lowValue,
 	};
@@ -287,5 +382,5 @@ rti.pulseapp = {
 		 
           }
         });
-    }, */ 
+    }, 
 }
