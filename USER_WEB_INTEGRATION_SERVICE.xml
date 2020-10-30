@@ -41,9 +41,12 @@
 
                     <data_reader name="PatientPulseReader" topic_ref="PatientPulseTopic">
 					    <datareader_qos>
+							<reliability>
+								<kind>RELIABLE_RELIABILITY_QOS</kind>
+							</reliability>
                             <history>
                                 <kind>KEEP_LAST_HISTORY_QOS</kind>
-                                <depth>6</depth>
+                                <depth>100</depth>
                             </history>
 						    <!-- !!!ToDo: update as required -->
 						</datareader_qos>
@@ -51,9 +54,12 @@
 
                     <data_reader name="PatientInfoReader" topic_ref="PatientInfoTopic">
 					    <datareader_qos>
+							<reliability>
+								<kind>RELIABLE_RELIABILITY_QOS</kind>
+							</reliability>
                             <history>
                                 <kind>KEEP_LAST_HISTORY_QOS</kind>
-                                <depth>6</depth>
+                                <depth>2</depth>
                             </history>
 						    <!-- !!!ToDo: update as required -->
 						</datareader_qos>
@@ -61,12 +67,15 @@
 
                 </subscriber>
 
-                <publisher name="PulseWisPublisher">
+                <publisher name="PatientConfigPublisher">
                     <data_writer name="PatientConfigWriter" topic_ref="PatientConfigTopic">
                         <datawriter_qos>
+							<reliability>
+								<kind>RELIABLE_RELIABILITY_QOS</kind>
+							</reliability>
                             <history>
                                 <kind>KEEP_LAST_HISTORY_QOS</kind>
-                                <depth>6</depth>
+                                <depth>5</depth>
                             </history>
 						    <!-- !!!ToDo: update as required -->
                         </datawriter_qos>
