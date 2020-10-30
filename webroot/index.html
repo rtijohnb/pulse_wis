@@ -76,7 +76,7 @@
 
     <p style="text-align:center" class="patient" id="countId"> placeholder count 
     </p>
-
+<!--
     <table class="center" >
       <tr> 
         <td> <input value="+20" type="button" class="btn btn-rounded btn-success" id="btnHighUpId"></a></td>
@@ -96,9 +96,33 @@
       <tr> 
         <td><h3 id="highLabelid">High</h3> </td>
   	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-	<td><h3 id="lowhLabelid">Low</h3> </td>
+	<td><h3 id="lowLabelId">Low</h3> </td>
       </tr>
     </table>
+    -->
+    <table class="center">
+<tbody>
+  <tr>
+    <td class="tg-label" rowspan="2"><h3 id="highLabelId">Pulse max threshold &nbsp;</h3></td>
+    <td class="tg-value" rowspan="2"><button id="highValueId" style="width:80px" class="btn-lg btn-outline-secondary">&nbsp;&nbsp;&nbsp;</button></td>
+    <!--<td class="tg-value" rowspan="2"><h1 id="highValueId">&nbsp;&nbsp;&nbsp;</h1> /button> -->
+    <td class="tg-btn"> <input class="btn-primary" value="+20" type="button" id="btnHighUpId"></a></td>
+  </tr>
+  <tr>
+	  <td class="tg-btn"> <input class="btn-primary" value="&ndash;20" type="button" id="btnHighDownId"></a></td>
+  </tr>
+  <tr><td>&nbsp;</td></tr>
+  <tr><td>&nbsp;</td></tr>
+  <tr>
+    <td class="tg-label" rowspan="2"><h3 id="highLabelId">Pulse min threshold &nbsp;</h3></td>
+    <td class="tg-value" rowspan="2"><button id="lowValueId" style="width:80px" class="btn-lg btn-outline-secondary">&nbsp;&nbsp;&nbsp;</button> </td>
+	    <td> <input class="btn-primary tg-btn" value="+20" type="button" id="btnLowUpId"></a></td>
+  </tr>
+  <tr>
+	  <td><input class="tg-btn btn-primary" value="&ndash;20" type="button" id="btnLowDownId"></a></td>
+  </tr>
+</tbody>
+</table>
 
     <script>
         (function () {

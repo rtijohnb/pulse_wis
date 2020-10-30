@@ -215,7 +215,7 @@ rti.pulseapp = {
         // show name/age on chart canvas, instead of in HTML
         let name = `${sample.data.FirstName} ${sample.data.LastName}     Age: ${sample.data.Age}`;
 	this.chartConfig.options.scales.xAxes[0].scaleLabel.labelString = name;
-        console.log('updatePatientInfo: ' + sample.data.Id.Id);
+        //console.log('updatePatientInfo: ' + sample.data.Id.Id);
         this.patientId = sample.data.Id.Id;
     },
     /**
@@ -223,10 +223,10 @@ rti.pulseapp = {
      */
     run: function() {
         var url = this.getPulseReaderURL();
-        const chartUpdateIntervalPeriod = 2000; // in milliseconds 2x data rate
+        const chartUpdateIntervalPeriod = 50; // in milliseconds 2x?? data rate
 
 	var configURL = this.getPatientConfigReaderURL();
-	    console.log(configURL);
+	    //console.log(configURL);
         // Call chartjs() for ecgPulse and bpm every ecgReadIntervalPeriod, passing the data resulting
         // for reading new samples of the appropriate topic in json format without deleting the samples
         // from the Reader's cache.
@@ -235,14 +235,14 @@ rti.pulseapp = {
             $.getJSON(
                 url,
                 {
+                    removeFromReaderCache: "false", // never take
                     sampleFormat: "json",
-                    removeFromReaderCache: "false",
-		    maxSamples: 10,
+		    //maxSamples: 10,  // default takes all samples, any state
                 },
                 function(data) {
 		    if (data) {
                         rti.pulseapp.updateChart(data); 
-			console.log({bpm: data});
+			//console.log({bpm: data});
 		    } else {
  		        console.log('got empty data' + this.bumpEmptyCnt());
 		    }
@@ -253,7 +253,7 @@ rti.pulseapp = {
 	      configURL,
 	      { sampleFormat:"json", removeFromReaderCache: "false"}, 
 	      function(samples) {
-                console.log('config: ', samples);
+                //console.log('config: ', samples);
 	        if (samples && samples.length) { 
 	          let data = samples[0].data;
 		  rti.pulseapp.updatePatientConfig(data.PulseHighThreshold, data.PulseLowThreshold);
@@ -347,20 +347,28 @@ rti.pulseapp = {
  
     /* update the screen's config */
     updatePatientConfig: function(high, low) {
-        console.log({updatePatientConfig:{high: high, low: low}});
+        //console.log({updatePatientConfig:{high: high, low: low}});
         rti.pulseapp.patientConfig.high = high;
         rti.pulseapp.patientConfig.low = low;
 	$("#highValueId").prop("innerHTML", high);
 	$("#lowValueId").prop("innerHTML", low);
 
-        $('#btnHighUpId').prop("disabled", high > 250);
-        $('#btnHighDownId').prop("disabled", high < 100);
-        $('#btnLowUpId').prop("disabled", low > 70);
-        $('#btnLowDownId').prop("disabled", low < 30);
+	    if (high >= 200)
+        $('#btnHighUpId').addClass('disabled');
+	    else
+        $('#btnHighUpId').removeClass('disabled');
+
+        $('#btnHighUpId').prop("disabled", high >= 1000);
+        $('#btnHighDownId').prop("disabled", high <= 100);
+        $('#btnLowUpId').prop("disabled", low >= 700);
+        //$('#btnLowDownId').prop("disabled", low <= 10);
+        document.getElementById('btnLowDownId').disabled = (low < 30);
+        //let x = document.getElementById('btnLowDownId').disabled;
+        //console.log({disabled: x});
     },
     /* Write some value back on the PatientConfig topic */
     writePatientConfig: function(highValue, lowValue) {
-        console.log({writePatientConfig:{ high: highValue, low: lowValue}});
+        //console.log({writePatientConfig:{ high: highValue, low: lowValue}});
         const configURL = this.getPatientConfigWriterURL();
         var configData = { 
 	  "Id": { "Id": this.patientId }, 
@@ -369,7 +377,7 @@ rti.pulseapp = {
 	};
 
 	var configDataJSON = JSON.stringify(configData);
-	console.log(configDataJSON);
+	//console.log(configDataJSON);
 
         $.ajax({
           url:configURL,
@@ -378,7 +386,7 @@ rti.pulseapp = {
           contentType:"application/dds-web+json",
           dataType:"json",
           success: function(param){
-            console.log("sent " + configDataJSON);
+            //console.log("sent " + configDataJSON);
 		 
           }
         });
