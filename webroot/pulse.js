@@ -18,9 +18,9 @@ var rti = rti || {};
 
 rti.pulseapp = {
     X_POINT_COUNT: 1000,
-    patientId: null,
+    patientId: "pid123",
     patientConfig: {
-      high: 200, 
+      high: 90,  // starting values
       low: 50,
     },
     chartConfig: {},
@@ -131,35 +131,35 @@ rti.pulseapp = {
             this.chartConfig.data.labels.push('0:00');
             this.chartConfig.data.datasets[0].data.push(500);
             // 2nd dataset is for sample highlight bars
-    	    // this.chartConfig.data.datasets[1].data.push(500);
+    	    //NOBAR this.chartConfig.data.datasets[1].data.push(500);
         };
 
 	/* Button handlers  */
         document.getElementById("btnHighUpId").addEventListener(
  	    "click", 
    	    function() { 
-		rti.pulseapp.writePatientConfig(rti.pulseapp.patientConfig.high+20, rti.pulseapp.patientConfig.low);
+		rti.pulseapp.writePatientConfig(rti.pulseapp.patientConfig.high+10, rti.pulseapp.patientConfig.low);
 	    }, 
    	    false
 	);
         document.getElementById("btnHighDownId").addEventListener(
 		"click", 
 		function() { 
-			rti.pulseapp.writePatientConfig(rti.pulseapp.patientConfig.high-20, rti.pulseapp.patientConfig.low);
+			rti.pulseapp.writePatientConfig(rti.pulseapp.patientConfig.high-10, rti.pulseapp.patientConfig.low);
 		}, 
 		false
 	);
         document.getElementById("btnLowUpId").addEventListener(
  	    "click", 
    	    function() { 
-		rti.pulseapp.writePatientConfig(rti.pulseapp.patientConfig.high, rti.pulseapp.patientConfig.low+20);
+		rti.pulseapp.writePatientConfig(rti.pulseapp.patientConfig.high, rti.pulseapp.patientConfig.low+10);
 	    }, 
    	    false
 	);
         document.getElementById("btnLowDownId").addEventListener(
 		"click", 
 		function() { 
-			rti.pulseapp.writePatientConfig(rti.pulseapp.patientConfig.high, rti.pulseapp.patientConfig.low-20);
+			rti.pulseapp.writePatientConfig(rti.pulseapp.patientConfig.high, rti.pulseapp.patientConfig.low-10);
 		}, 
 		false
 	);
@@ -270,7 +270,7 @@ rti.pulseapp = {
 
     updateChart: function(sampleSeq) {
         var chartData = this.chartConfig.data.datasets[0].data;
-        //var barData   = this.chartConfig.data.datasets[1].data;
+        //NOBAR var barData   = this.chartConfig.data.datasets[1].data;
         var chartLabels = this.chartConfig.data.labels;
         var lineChart = this.lineChart;
 
@@ -312,7 +312,7 @@ rti.pulseapp = {
 
                         chartLabels.shift();
                         chartData.shift();
-			//barData.shift();
+			//NOBAR barData.shift();
 
 			            //console.log(reception_time.sec);
 		        let dt = new Date (reception_time.sec * 1000);
@@ -320,11 +320,11 @@ rti.pulseapp = {
 				         ('00'+dt.getSeconds()).slice(-2));
                         chartData.push(reading);
 			// Enable for bars
-			/*if (rti.pulseapp.getUpdateCount() % 2) {
+			/*NOBARif (rti.pulseapp.getUpdateCount() % 2) {
 				barData.push(200);
 			} else {
 				barData.push(999);
-			} */
+			}*/ 
 
                     });
 
@@ -358,11 +358,11 @@ rti.pulseapp = {
 	    else
         $('#btnHighUpId').removeClass('disabled');
 
-        $('#btnHighUpId').prop("disabled", high >= 1000);
-        $('#btnHighDownId').prop("disabled", high <= 100);
-        $('#btnLowUpId').prop("disabled", low >= 700);
+        $('#btnHighUpId').prop("disabled", high >= 200);
+        $('#btnHighDownId').prop("disabled", high <= 0);
+        $('#btnLowUpId').prop("disabled", low >= 200);
         //$('#btnLowDownId').prop("disabled", low <= 10);
-        document.getElementById('btnLowDownId').disabled = (low < 30);
+        document.getElementById('btnLowDownId').disabled = (low <= 0);
         //let x = document.getElementById('btnLowDownId').disabled;
         //console.log({disabled: x});
     },
@@ -371,13 +371,13 @@ rti.pulseapp = {
         //console.log({writePatientConfig:{ high: highValue, low: lowValue}});
         const configURL = this.getPatientConfigWriterURL();
         var configData = { 
-	  "Id": { "Id": this.patientId }, 
-	  "PulseHighThreshold": highValue,
-	  "PulseLowThreshold": lowValue,
+	  Id: { Id: this.patientId.toString() }, 
+	  PulseHighThreshold: highValue,
+	  PulseLowThreshold: lowValue,
 	};
 
 	var configDataJSON = JSON.stringify(configData);
-	//console.log(configDataJSON);
+	console.log(configDataJSON);
 
         $.ajax({
           url:configURL,
@@ -386,8 +386,7 @@ rti.pulseapp = {
           contentType:"application/dds-web+json",
           dataType:"json",
           success: function(param){
-            //console.log("sent " + configDataJSON);
-		 
+            console.log({sent: configDataJSON});
           }
         });
     }, 
