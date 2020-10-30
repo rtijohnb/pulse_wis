@@ -7,6 +7,8 @@ Configuration files, related scripts, and web content for the Web Integration Se
 **provides a bridge between the Pi used in the demo and this AWS instance/WIS instance.  Please load that and
 **run it alongside this WIS instance.
 
+![QR code for WIS instance](/QR.code.50.18.214.8-8090.png)
+
 Several script files have been placed in this directory to simplify running the WIS instance.
 In all cases, these scripts assume that the environment variable NDDSHOME is set appropriately for
 the host.
