@@ -331,6 +331,7 @@ rti.pulseapp = {
     /* update the screen's config */
     updatePatientConfig: function(high, low) {
         //console.log({updatePatientConfig:{high: high, low: low}});
+        // console.log (high, low);
         rti.pulseapp.patientConfig.high = high;
         rti.pulseapp.patientConfig.low = low;
         $("#highValueId").prop("innerHTML", high);
@@ -342,8 +343,8 @@ rti.pulseapp = {
          $('#btnHighUpId').removeClass('disabled');
 
         $('#btnHighUpId').prop("disabled", high >= 200);
-        $('#btnHighDownId').prop("disabled", high <= 0);
-        $('#btnLowUpId').prop("disabled", low >= 200);
+        $('#btnHighDownId').prop("disabled", high <= rti.pulseapp.patientConfig.low+10);
+        $('#btnLowUpId').prop("disabled", low >= rti.pulseapp.patientConfig.high-10);
         //$('#btnLowDownId').prop("disabled", low <= 10);
         document.getElementById('btnLowDownId').disabled = (low <= 0);
         //let x = document.getElementById('btnLowDownId').disabled;
