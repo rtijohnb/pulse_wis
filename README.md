@@ -1,5 +1,7 @@
 # pulse_wis
 
+![](https://github.com/psmass/DDSexamples/blob/master/RtiAsOne.png)
+
 Configuration files, related scripts, and web content for the Web Integration Service instance used in the Pulse Demo.
 
 **Note that in the standard demo described on the confluence page related to this demo, the
