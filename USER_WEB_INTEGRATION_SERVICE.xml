@@ -5,9 +5,9 @@
     <!--
         Note that WIS doesn't like including the system designer config file directly, and
 		didn't like the "module" definitions, or the references that stem from the modul-ization
-		of the types in that file.  SO I peeled out the types, de-modulified them and stored
-		the result in this "MedicalDemoTypes.xml" file for configuring type information for 
-		this WIS instance...
+		of the types in that file.  SO the following types were peeled out of the System Designer
+		configuration file, de-modulified them and stored in "MedicalDemoTypes.xml" file for
+		configuring type information for this WIS instance...
     -->
     <types>
         <include file="MedicalDemoTypes.xml" />
@@ -38,11 +38,12 @@
                 <topic name="PatientConfigTopic" register_type_ref="PatientConfig" />
 
                 <subscriber name="PulseWisSubscriber">
+
                     <data_reader name="PatientPulseReader" topic_ref="PatientPulseTopic">
-                        <datareader_qos>
-                            <reliability>
-                                <kind>RELIABLE_RELIABILITY_QOS</kind>
-                            </reliability>
+					    <datareader_qos>
+							<reliability>
+								<kind>RELIABLE_RELIABILITY_QOS</kind>
+							</reliability>
                             <history>
                                 <kind>KEEP_LAST_HISTORY_QOS</kind>
                                 <depth>100</depth>
@@ -62,12 +63,18 @@
 					-->
                 </subscriber>
 
-                <publisher name="PulseWisPublisher">
+                <publisher name="PatientConfigPublisher">
                     <data_writer name="PatientConfigWriter" topic_ref="PatientConfigTopic">
-					<!--
-                        <datawriter_qos base_name="RTI_Eval_Qos_Library_1_0::Command_Response"/>
-                    </data_reader>
-					-->
+                        <datawriter_qos>
+							<reliability>
+								<kind>RELIABLE_RELIABILITY_QOS</kind>
+							</reliability>
+                            <history>
+                                <kind>KEEP_LAST_HISTORY_QOS</kind>
+                                <depth>5</depth>
+                            </history>
+						    <!-- !!!ToDo: update as required -->
+                        </datawriter_qos>
 					</data_writer>
                 </publisher>
 

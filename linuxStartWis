@@ -1,2 +1,2 @@
-$NDDSHOME/bin/rtiwebintegrationservice -cfgName PulseWis -enableKeepAlive yes -listeningPorts 9900 -documentRoot webroot
+$NDDSHOME/bin/rtiwebintegrationservice -cfgName PulseWis -enableKeepAlive yes -listeningPorts 8090 -documentRoot webroot
 
