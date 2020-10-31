@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <meta name="description"
-      content="Simple web subscriber application for Heartbeat demo">
+    <meta name="description"
+    content="Simple web subscriber application for Heartbeat demo">
     <meta name="author" content="Real-Time Innovations, Inc.">
 
     <title>Pulse Demo Application</title>
@@ -36,8 +36,9 @@
             <td style="background-color:black">
                 <div class="text-left">
                     <span class="heartInfoDisplayText" style="color:orange">
-                    <div style="font-weight:normal; display:inline-block;"> Heartbeat: </div>
-                    <div id="heartbeatValue" style="font-family:monospace; display:inline-block;"> 100 </div>
+                    <div style="font-weight:normal; display:inline-block;"> Pulse Rate: </div>
+                    <div id="heartbeatValue" style="font-family:monospace; display:inline-block;"> 00 </div>
+                    <div style="font-weight:normal; font-size: small; display:inline-block;"> bpm </div>
                     </span>
                 </div>
             </td>
@@ -63,6 +64,7 @@
                         <div class="card-body">
                             <canvas id="canvas">
                             </canvas>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -70,24 +72,40 @@
         </div>
     </div>
 
-    <p style="text-align:center" class="patient" id="patientNameId"> placeholder name
-    </p>
-
+    <p></p>
     <p style="text-align:center" class="patient" id="countId"> placeholder count 
     </p>
 
-    <!-- <div style="text-align:center" >
-    <input value="200" type="button" class="btn btn-large btn-success" id="btn200">  </a>
-    <input value="100" type="button" class="btn btn-large " id="btn100">  </a>
-    <input value="50 [alt-shift-f]" type="button" accesskey="f" class="btn btn-large btn-success" id="btn50"> </a>
-    </div> -->
+    <table class="center">
+    <tbody>
+        <tr>
+            <td class="tg-label" rowspan="2"><h3 id="highLabelId">Pulse max &nbsp;</h3></td>
+            <td class="tg-value" rowspan="2"><button id="highValueId" style="width:80px" class="btn-lg btn-outline-secondary">&nbsp;&nbsp;&nbsp;</button></td>
+            <!--<td class="tg-value" rowspan="2"><h1 id="highValueId">&nbsp;&nbsp;&nbsp;</h1> /button> -->
+            <td class="tg-btn"> <input class="btn-primary" value="+10" type="button" id="btnHighUpId"></a></td>
+          </tr>
+          <tr>
+              <td class="tg-btn"> <input class="btn-primary" value="&ndash;10" type="button" id="btnHighDownId"></a></td>
+          </tr>
+          <tr><td>&nbsp;</td></tr>
+          <tr><td>&nbsp;</td></tr>
+          <tr>
+            <td class="tg-label" rowspan="2"><h3 id="highLabelId">Pulse min &nbsp;</h3></td>
+            <td class="tg-value" rowspan="2"><button id="lowValueId" style="width:80px" class="btn-lg btn-outline-secondary">&nbsp;&nbsp;&nbsp;</button> </td>
+                <td> <input class="btn-primary tg-btn" value="+10" type="button" id="btnLowUpId"></a></td>
+          </tr>
+          <tr>
+              <td><input class="tg-btn btn-primary" value="&ndash;10" type="button" id="btnLowDownId"></a></td>
+          </tr>
+    </tbody>
+    </table>
 
     <script>
         (function () {
         // Start reading the data
         // Setup scenario and start heartbeat info
         rti.pulseapp.setupScenario();
-        rti.pulseapp.read();
+        rti.pulseapp.run();
 
         })();
     </script>

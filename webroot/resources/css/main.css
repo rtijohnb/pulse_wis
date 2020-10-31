@@ -9,7 +9,7 @@ body {
 /* scaling of the graph background image needs improvement */
 canvas {
 	background: url('/resources/img/rti_background.png');
-	padding: 0;   /* controls whitespace around graph withint the container */
+	padding: 2%;   /* controls whitespace around graph withint the container */
 	background-position: center;
 	background-repeat: no-repeat;
 	margin: 0;
@@ -20,4 +20,16 @@ canvas {
 	font-weight:normal;
 }
 
+.center {
+	margin-left: auto;
+	margin-right: auto;
+}
 
+
+.tg  {border-collapse:collapse;border-spacing:0;}/* margin:0px auto;} */
+/*.tg td{font-family:Arial, sans-serif;font-size:14px; overflow:hidden;padding:0px 0px;}
+.tg th{font-family:Arial, sans-serif;font-size:14px; font-weight:normal;overflow:hidden;padding:3px 3px;}
+*/
+.tg .tg-value{font-size: 20px; border-collapse: collapse; border: none; min-width: 200px; text-align:left;vertical-align:middle}
+.tg .tg-btn{font-family:"monospace";border-collapse: collapse; border: none; text-align:left;vertical-align:top}
+.tg .tg-label{border-collapse: collapse; border: none; text-align:center;vertical-align:middle}
