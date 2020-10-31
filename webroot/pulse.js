@@ -209,10 +209,10 @@ rti.pulseapp = {
     
     updatePatientInfo(sample) {
         // console.log(data);
-        let name = `${sample.data.FirstName} ${sample.data.LastName}     Age: ${sample.data.Age}  ID: ${sample.data.Id.Id}`;
+        let name = `${sample.data.FirstName} ${sample.data.LastName}     Age: ${sample.data.Age}  ID: ${sample.data.Id}`;
         this.chartConfig.options.scales.xAxes[0].scaleLabel.labelString = name;
-            //console.log('updatePatientInfo: ' + sample.data.Id.Id);
-        this.patientId = sample.data.Id.Id;
+            //console.log('updatePatientInfo: ' + sample.data.Id);
+        this.patientId = sample.data.Id;
     },
     /**
      *  The method will call the methods that update the display at 33 ms intervals.
@@ -353,7 +353,7 @@ rti.pulseapp = {
     writePatientConfig: function(highValue, lowValue) {
         const configURL = this.getPatientConfigWriterURL();
         var configData = { 
-            Id: { Id: this.patientId.toString() }, 
+            Id: this.patientId.toString(), 
             PulseHighThreshold: highValue,
             PulseLowThreshold: lowValue,
         };
@@ -368,7 +368,7 @@ rti.pulseapp = {
           contentType:"application/dds-web+json",
           dataType:"json",
           success: function(param){
-            //console.log("sent " + configDataJSON);
+          console.log("sent " + configDataJSON);
 		 
           }
         });

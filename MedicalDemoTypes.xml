@@ -74,13 +74,13 @@
           </struct>
           <typedef name="Patient_ID_t" type="nonBasic" nonBasicTypeName="_patient_id_t"/>
           <struct name="PatientPulse">
-            <member name="Id" type="nonBasic" nonBasicTypeName="_patient_id_t"/>
+            <member name="Id" type="string" stringMaxLength="32" key="true"/>
             <member name="timestamp" type="nonBasic" nonBasicTypeName="TimeStamp_t"/>
             <member name="readings" type="uint32" sequenceMaxLength="100"/>
             <member name="bpm" type="uint8"/>
           </struct>
           <struct name="PatientInfo">
-            <member name="Id" type="nonBasic" nonBasicTypeName="_patient_id_t"/>
+            <member name="Id" type="string" stringMaxLength="32" key="true"/>
             <member name="FirstName" type="string" stringMaxLength="32"/>
             <member name="LastName" type="string" stringMaxLength="32"/>
             <member name="Age" type="uint32"/>
@@ -89,7 +89,7 @@
             <member name="Sex" type="string" stringMaxLength="32"/>
           </struct>
           <struct name="PatientConfig">
-            <member name="Id" type="nonBasic" nonBasicTypeName="_patient_id_t"/>
+            <member name="Id" type="string" stringMaxLength="32" key="true"/>
             <member name="PulseHighThreshold" type="uint32" default="200"/>
             <member name="PulseLowThreshold" type="uint32" default="0"/>
           </struct>
@@ -99,4 +99,3 @@
     </types>
 	-->
 </types>
-
