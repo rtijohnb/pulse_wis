@@ -26,8 +26,8 @@
                 <!--
                 <participant_qos base_name="RTI_Eval_Qos_Library_1_0::Base_Participant_QoS" />
                 -->
-				<participant_qos>
-				</participant_qos>
+                <participant_qos>
+                </participant_qos>
 
                 <register_type name="PatientPulse" type_ref="PatientPulse" />
                 <register_type name="PatientInfo" type_ref="PatientInfo" />
@@ -40,7 +40,7 @@
                 <subscriber name="PulseWisSubscriber">
 
                     <data_reader name="PatientPulseReader" topic_ref="PatientPulseTopic">
-					    <datareader_qos>
+                        <datareader_qos>
                             <reliability>
                                 <kind>RELIABLE_RELIABILITY_QOS</kind>
                             </reliability>
@@ -53,7 +53,7 @@
                     </data_reader>
 
                     <data_reader name="PatientInfoReader" topic_ref="PatientInfoTopic">
-					    <datareader_qos>
+                        <datareader_qos>
                             <reliability>
                                 <kind>RELIABLE_RELIABILITY_QOS</kind>
                             </reliability>
@@ -71,14 +71,14 @@
 
                     <data_writer name="PatientConfigWriter" topic_ref="PatientConfigTopic">
                         <datawriter_qos>
-							<reliability>
-								<kind>RELIABLE_RELIABILITY_QOS</kind>
-							</reliability>
+                            <reliability>
+                                <kind>RELIABLE_RELIABILITY_QOS</kind>
+                            </reliability>
                             <history>
                                 <kind>KEEP_LAST_HISTORY_QOS</kind>
                                 <depth>5</depth>
                             </history>
-						    <!-- !!!ToDo: update as required -->
+                            <!-- !!!ToDo: update as required -->
                         </datawriter_qos>
 					</data_writer>
 
