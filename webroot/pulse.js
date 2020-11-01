@@ -290,8 +290,8 @@ rti.pulseapp = {
             // unregistered and we ignore the sample.
             if (sample.data.timestamp > rti.pulseapp.prevSampleTimestamp+1) 
                 console.log("Timestamp Error: ", sample.data.timestamp, rti.pulseapp.prevSampleTimestamp);
-            if (valid_data && (instance_state == "ALIVE") && 
-                (sample.data.timestamp > rti.pulseapp.prevSampleTimestamp)) {
+            if (valid_data && (instance_state == "ALIVE")) {  //&& 
+                //(sample.data.timestamp > rti.pulseapp.prevSampleTimestamp)) {
                     rti.pulseapp.prevSampleTimestamp = sample.data.timestamp;
                     // console.log(sample.data.timestamp);
                     // console.log(chartData.length);
@@ -321,9 +321,9 @@ rti.pulseapp = {
                 // console.log("Dropping,Read old data: prev ts " + rti.pulseapp.prevSampleTimestamp + "data ts " + sample.data.timestamp + " rec: " + info.source_timestamp.sec);
             }
             const COUNT_ITEM = document.getElementById("countId");
-            COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.bumpUpdateCount() +
-                    " sample count: " + rti.pulseapp.getSampleCount() +
-                    " total samples: " + rti.pulseapp.getTotalSampleCount();
+            COUNT_ITEM.innerHTML = "update count: " + rti.pulseapp.bumpUpdateCount();
+                //+ " sample count: " + rti.pulseapp.getSampleCount() +
+                //    " total samples: " + rti.pulseapp.getTotalSampleCount();
         });
         lineChart.update();
         //}
@@ -369,7 +369,7 @@ rti.pulseapp = {
           contentType:"application/dds-web+json",
           dataType:"json",
           success: function(param){
-          console.log("sent " + configDataJSON);
+          // console.log("sent " + configDataJSON);
 		 
           }
         });

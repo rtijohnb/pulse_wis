@@ -43,7 +43,7 @@
 					    <datareader_qos>
 							<reliability>
 								<kind>RELIABLE_RELIABILITY_QOS</kind>
-							</reliability>
+                            </reliability>
                             <history>
                                 <kind>KEEP_LAST_HISTORY_QOS</kind>
                                 <depth>100</depth>
