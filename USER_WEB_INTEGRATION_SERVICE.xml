@@ -65,6 +65,8 @@
                         </datareader_qos>
                     </data_reader>
 
+                    <data_reader name="PatientConfigReader" topic_ref="PatientConfigTopic"/> 
+
                 </subscriber>
 
                 <publisher name="PulseWisPublisher">
