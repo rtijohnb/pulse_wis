@@ -316,6 +316,16 @@ rti.pulseapp = {
                     var value = sample.data.bpm;
                     var elementHb = document.getElementById("heartbeatValue");
                     elementHb.innerHTML = value;
+                    // local alaarm of bmp (not DDS as one - alarms should come from central control)
+                    // console.log(value, rti.pulseapp.patientConfig.high);
+                    if ((value >= rti.pulseapp.patientConfig.high) || (value <= rti.pulseapp.patientConfig.low)) {
+                        $('#heartbeatValue').css("color", "red");
+                        $("#heartbeatValue").fadeOut(500).fadeIn(500);
+                        // $("#heartbeatValue").delay(100).fadeOut().fadeIn('slow');
+                    } else {
+                        $('#heartbeatValue').css("color", "orange");
+                        $("#heartbeatValue").stop(true, true).finish();
+                    }
 
             } else {  // we re-read prior sequential set of data from cache - we don't need to re-display (only a waste of time)
                 // console.log("Dropping,Read old data: prev ts " + rti.pulseapp.prevSampleTimestamp + "data ts " + sample.data.timestamp + " rec: " + info.source_timestamp.sec);
