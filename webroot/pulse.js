@@ -28,6 +28,7 @@ rti.pulseapp = {
         updateCount: 0, emptyCount: 0,
         sampleCount: 0, totalSampleCount: 0,
     },
+    alarm: false,
     lineChart: null,
     prevSampleTimestamp: -1, /* keep track of previous sample ts to filter out dups now that we read() vs. take() */
 
@@ -317,12 +318,13 @@ rti.pulseapp = {
                     var elementHb = document.getElementById("heartbeatValue");
                     elementHb.innerHTML = value;
                     // local alaarm of bmp (not DDS as one - alarms should come from central control)
-                    // console.log(value, rti.pulseapp.patientConfig.high);
-                    if ((value >= rti.pulseapp.patientConfig.high) || (value <= rti.pulseapp.patientConfig.low)) {
+                    //console.log(value, rti.pulseapp.patientConfig.high);
+                    if (!rti.pulseapp.alarm && ((value >= rti.pulseapp.patientConfig.high) || (value <= rti.pulseapp.patientConfig.low))) {
+                        rti.pulseapp.alarm=true;
                         $('#heartbeatValue').css("color", "red");
                         $("#heartbeatValue").fadeOut(500).fadeIn(500);
-                        // $("#heartbeatValue").delay(100).fadeOut().fadeIn('slow');
-                    } else {
+                    } else if (rti.pulseapp.alarm && ((value < rti.pulseapp.patientConfig.high) && (value >rti.pulseapp.patientConfig.low))) {
+                        rti.pulseapp.alarm=false;
                         $('#heartbeatValue').css("color", "orange");
                         $("#heartbeatValue").stop(true, true).finish();
                     }
