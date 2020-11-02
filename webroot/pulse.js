@@ -253,6 +253,16 @@ rti.pulseapp = {
                 }
             );
         }, chartUpdateIntervalPeriod);
+
+        setInterval(function(){   // Alarm Flash
+            if (rti.pulseapp.alarm) {
+                $('#heartbeatValue').css("color", "red");
+                $("#heartbeatValue").fadeOut(450).fadeIn(450);
+            } else {                        
+                $('#heartbeatValue').css("color", "orange");
+                $("#heartbeatValue").stop(true, true).finish();
+            }
+        }, 1000);
     },
   
     /**
@@ -321,12 +331,8 @@ rti.pulseapp = {
                     //console.log(value, rti.pulseapp.patientConfig.high);
                     if (!rti.pulseapp.alarm && ((value >= rti.pulseapp.patientConfig.high) || (value <= rti.pulseapp.patientConfig.low))) {
                         rti.pulseapp.alarm=true;
-                        $('#heartbeatValue').css("color", "red");
-                        $("#heartbeatValue").fadeOut(500).fadeIn(500);
                     } else if (rti.pulseapp.alarm && ((value < rti.pulseapp.patientConfig.high) && (value >rti.pulseapp.patientConfig.low))) {
                         rti.pulseapp.alarm=false;
-                        $('#heartbeatValue').css("color", "orange");
-                        $("#heartbeatValue").stop(true, true).finish();
                     }
 
             } else {  // we re-read prior sequential set of data from cache - we don't need to re-display (only a waste of time)
