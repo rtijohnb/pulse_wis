@@ -17,7 +17,7 @@ var rti = rti || {};
  */
 rti.pulseapp = {
     X_POINT_COUNT: 1000,
-    BROWSER_UPDATE_RATE_MS: 30,
+    BROWSER_UPDATE_RATE_MS: 100,   
     patientId: "pid123",
     patientConfig: {
         high: 90, 
@@ -220,7 +220,6 @@ rti.pulseapp = {
      */
     run: function() {
         var url = this.getPulseReaderURL();
-        const chartUpdateIntervalPeriod = rti.pulseapp.BROWSER_UPDATE_RATE_MS; // in milliseconds 2x data rate
 
         var configURL = this.getPatientConfigReaderURL();
 
@@ -252,7 +251,7 @@ rti.pulseapp = {
                     }
                 }
             );
-        }, chartUpdateIntervalPeriod);
+        }, rti.pulseapp.BROWSER_UPDATE_RATE_MS);
 
         setInterval(function(){   // Alarm Flash
             if (rti.pulseapp.alarm) {
@@ -292,6 +291,7 @@ rti.pulseapp = {
             var instance_handle = info.instance_handle;
             var instance_state  = info.instance_state;
             var reception_time  = info.source_timestamp;
+            var error_str = "no error";
             //var averageReading;
             rti.pulseapp.setSampleCount(sample.data.readings.length);
 
@@ -299,8 +299,12 @@ rti.pulseapp = {
             // If we received an invalid data sample, and the instance state
             // is != ALIVE, then the instance has been either disposed or
             // unregistered and we ignore the sample.
-            if (sample.data.timestamp > rti.pulseapp.prevSampleTimestamp+1) 
-                console.log("Timestamp Error: ", sample.data.timestamp, rti.pulseapp.prevSampleTimestamp);
+
+            if (sample.data.timestamp > rti.pulseapp.prevSampleTimestamp+1) {
+                (i==0) ? error_str = "between sample sets" : error_str = "Inside sample set";
+                console.log("Lost packet " + error_str + " @Seqence: " + i + 
+                " Timestamps: " + sample.data.timestamp + " " + rti.pulseapp.prevSampleTimestamp);
+            }
             if (valid_data && (instance_state == "ALIVE")) {  //&& 
                 //(sample.data.timestamp > rti.pulseapp.prevSampleTimestamp)) {
                     rti.pulseapp.prevSampleTimestamp = sample.data.timestamp;
