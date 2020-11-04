@@ -28,17 +28,14 @@
                 -->
                 <participant_qos>
                 </participant_qos>
-
                 <register_type name="PatientPulse" type_ref="PatientPulse" />
                 <register_type name="PatientInfo" type_ref="PatientInfo" />
                 <register_type name="PatientConfig" type_ref="PatientConfig" />
-
                 <topic name="PatientInfoTopic" register_type_ref="PatientInfo" />
                 <topic name="PatientPulseTopic" register_type_ref="PatientPulse"/>
                 <topic name="PatientConfigTopic" register_type_ref="PatientConfig" />
 
                 <subscriber name="PulseWisSubscriber">
-
                     <data_reader name="PatientPulseReader" topic_ref="PatientPulseTopic">
                         <datareader_qos>
                             <reliability>
@@ -59,18 +56,14 @@
                             </reliability>
                             <history>
                                 <kind>KEEP_LAST_HISTORY_QOS</kind>
-                                <depth>100</depth>
+                                <depth>2</depth>
                             </history>
                         <!-- !!!ToDo: update as required -->
                         </datareader_qos>
                     </data_reader>
-
-                    <data_reader name="PatientConfigReader" topic_ref="PatientConfigTopic"/> 
-
+                  <data_reader name="PatientConfigReader" topic_ref="PatientConfigTopic"/> 
                 </subscriber>
-
                 <publisher name="PulseWisPublisher">
-
                     <data_writer name="PatientConfigWriter" topic_ref="PatientConfigTopic">
                         <datawriter_qos>
                             <reliability>
@@ -82,12 +75,9 @@
                             </history>
                             <!-- !!!ToDo: update as required -->
                         </datawriter_qos>
-					</data_writer>
-
+ 		   </data_writer>
                 </publisher>
-
             </domain_participant>
         </application>
     </web_integration_service>
-
 </dds>
