@@ -27,6 +27,10 @@
                 <participant_qos base_name="RTI_Eval_Qos_Library_1_0::Base_Participant_QoS" />
                 -->
                 <participant_qos>
+                    <participant_name>
+                        <name>PulseWisParticipant</name>
+                        <role_name>PulseWisParticipantRole</role_name>
+                    </participant_name> 
                     <property> 
                         <value> 
                             <element> 
