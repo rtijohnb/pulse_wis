@@ -34,6 +34,10 @@
                 add the to the replay command line -domainIdBase 20 -->
             <domain_id>0</domain_id>
             <participant_qos>
+                <participant_name>
+                    <name>ReplayParticipant</name>
+                    <role_name>ReplayParticipantRole</role_name>
+                </participant_name> 
                 <property> 
                     <value> 
                         <element> 
