@@ -27,6 +27,18 @@
                 <participant_qos base_name="RTI_Eval_Qos_Library_1_0::Base_Participant_QoS" />
                 -->
                 <participant_qos>
+                    <property> 
+                        <value> 
+                            <element> 
+                                <name>rti.monitor.library</name> 
+                                <value>rtimonitoring</value> 
+                            </element> 
+                            <element> 
+                                <name>rti.monitor.create_function</name> 
+                                <value>RTIDefaultMonitor_create</value> 
+                            </element> 
+                        </value> 
+                    </property> 
                 </participant_qos>
 
                 <register_type name="PatientPulse" type_ref="PatientPulse" />
