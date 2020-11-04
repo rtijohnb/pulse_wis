@@ -1,2 +1,9 @@
-$NDDSHOME/bin/rtiwebintegrationservice -cfgName PulseWis -enableKeepAlive yes -listeningPorts 8090 -documentRoot webroot
+if [ 2 -eq `ps auxw|grep 'rtiwebintegrationservice.*8090'|wc -l` ];
+then
+     echo "It looks like WIS is already running, try killing it first"
+     echo "     kill `ps axw|grep 'rtiwebintegrationservice.*8090'|awk '{$1=$1}1'|cut -d ' ' -f 1|head -n 1`"
+     exit
+fi
+echo "Starting WIS"
+$NDDSHOME/bin/rtiwebintegrationservice -cfgName PulseWis -enableKeepAlive yes -listeningPorts 8090 -documentRoot webroot &
 
