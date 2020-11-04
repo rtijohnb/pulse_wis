@@ -33,6 +33,20 @@
                 right now with the replayed data on domain0 we need to leave this 20 and
                 add the to the replay command line -domainIdBase 20 -->
             <domain_id>0</domain_id>
+            <participant_qos>
+                <property> 
+                    <value> 
+                        <element> 
+                            <name>rti.monitor.library</name> 
+                            <value>rtimonitoring</value> 
+                        </element> 
+                        <element> 
+                            <name>rti.monitor.create_function</name> 
+                            <value>RTIDefaultMonitor_create</value> 
+                        </element> 
+                    </value> 
+                </property> 
+            </participant_qos>
         </domain_participant>
 
         <session name="DefaultSession" default_participant_ref="DefaultParticipant">
