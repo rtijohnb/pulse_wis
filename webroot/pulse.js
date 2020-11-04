@@ -17,7 +17,7 @@ var rti = rti || {};
  */
 rti.pulseapp = {
     X_POINT_COUNT: 1000,
-    BROWSER_UPDATE_RATE_MS: 100,   
+    BROWSER_UPDATE_RATE_MS: 65,   
     patientId: "pid123",
     patientConfig: {
         high: 90, 
