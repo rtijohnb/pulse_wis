@@ -25,11 +25,26 @@ canvas {
 	margin-right: auto;
 }
 
+.display-box {
+	width:80px;
+	height: 60px;
+	text-align: center;
+	border-color:black;
+	border-width:4px;
+	color: black; 
+	font-size: 24px;
+}
 
-.tg  {border-collapse:collapse;border-spacing:0;}/* margin:0px auto;} */
-/*.tg td{font-family:Arial, sans-serif;font-size:14px; overflow:hidden;padding:0px 0px;}
-.tg th{font-family:Arial, sans-serif;font-size:14px; font-weight:normal;overflow:hidden;padding:3px 3px;}
-*/
-.tg .tg-value{font-size: 20px; border-collapse: collapse; border: none; min-width: 200px; text-align:left;vertical-align:middle}
-.tg .tg-btn{font-family:"monospace";border-collapse: collapse; border: none; text-align:left;vertical-align:top}
-.tg .tg-label{border-collapse: collapse; border: none; text-align:center;vertical-align:middle}
+.sm-button {
+	background-color:#0f607a; 
+	color: white; 
+	width: 40px;
+ 	border-radius: 5px; 
+  	padding: 3px 3px 3px 0px;
+  	font-size: 14px;
+  	text-align: center;
+  	display: inline-block;
+  	margin: 4px;
+  	text-decoration: none;
+  	text-transform: uppercase;
+}

@@ -42,6 +42,19 @@ rti.pulseapp = {
     getPatientId: function() { return this.patientId;},
     setPatientId: function(id) { this.patientId = id; },
 
+    fillChartLine: function(points, shift) {
+        // console.log(points);
+        for (var i=0; i< points; i++){
+        // prefill the chart withnominal data (autoscales)
+        if (shift) {
+          rti.pulseapp.chartConfig.data.datasets[0].data.shift();
+          rti.pulseapp.chartConfig.data.labels.shift();
+        }
+        rti.pulseapp.chartConfig.data.labels.push('0:00');
+        rti.pulseapp.chartConfig.data.datasets[0].data.push(500);
+        }
+    },
+
     getBaseURL: function(is_pub) {
       var app = "/dds/rest1/applications/PulseWisApp";
       var pant = "domain_participants/PulseWisParticipant";
@@ -131,11 +144,7 @@ rti.pulseapp = {
         context = document.getElementById('canvas').getContext('2d');
         this.lineChart = new Chart(context, this.chartConfig);
 
-        for (i=0; i< this.X_POINT_COUNT; i++){
-            // prefill the chart with gray nominal data (autoscales)
-            this.chartConfig.data.labels.push('0:00');
-            this.chartConfig.data.datasets[0].data.push(500);
-        };
+        this.fillChartLine(this.X_POINT_COUNT, false);
         //this.lineChart.update();
 
         /* Button handlers  */
@@ -279,7 +288,8 @@ rti.pulseapp = {
         // lineChart.config.data.datasets[0].backgroundColor="rgb(255, 99, 132)";
     
         // console.log ("Sample seq len: ", sampleSeq.length)
-        //if (sampleSeq.length == 100) {
+        rti.pulseapp.fillChartLine(rti.pulseapp.X_POINT_COUNT- (sampleSeq.length * sampleSeq[0].data.readings.length), true);
+
         sampleSeq.forEach(function(sample, i, samples) {
             // Process metadata
             
@@ -295,16 +305,18 @@ rti.pulseapp = {
             //var averageReading;
             rti.pulseapp.setSampleCount(sample.data.readings.length);
 
-            //console.log("sample received:", reception_time);
-            // If we received an invalid data sample, and the instance state
-            // is != ALIVE, then the instance has been either disposed or
-            // unregistered and we ignore the sample.
-
+            // log if we get a sample out of sequence - note between sample sequences since we often re-read 
+            // the WIS reader cache = prev sample sequence number will be 99 or 100 less than the timestamp
+            // number in the first sample of the sequence. - then it falls into line.
             if (sample.data.timestamp > rti.pulseapp.prevSampleTimestamp+1) {
                 (i==0) ? error_str = "between sample sets" : error_str = "Inside sample set";
                 console.log("Lost packet " + error_str + " @Seqence: " + i + 
                 " Timestamps: " + sample.data.timestamp + " " + rti.pulseapp.prevSampleTimestamp);
             }
+
+            // If we received an invalid data sample, and the instance state
+            // is != ALIVE, then the instance has been either disposed or
+            // unregistered and we ignore the sample.
             if (valid_data && (instance_state == "ALIVE")) {  //&& 
                 //(sample.data.timestamp > rti.pulseapp.prevSampleTimestamp)) {
                     rti.pulseapp.prevSampleTimestamp = sample.data.timestamp;
