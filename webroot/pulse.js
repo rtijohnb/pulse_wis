@@ -266,7 +266,8 @@ rti.pulseapp = {
             if (rti.pulseapp.alarm) {
                 $('#heartbeatValue').css("color", "red");
                 $("#heartbeatValue").fadeOut(450).fadeIn(450);
-            } else {                        
+            } else {
+                $("#heartbeatValue").fadeIn(450);    // ensure it's faded back in!                    
                 $('#heartbeatValue').css("color", "orange");
                 $("#heartbeatValue").stop(true, true).finish();
             }

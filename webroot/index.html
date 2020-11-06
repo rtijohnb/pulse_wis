@@ -79,22 +79,36 @@
     <table class="center">
     <tbody>
         <tr>
-            <td rowspan="2"><h4 id="highLabelId" >Pulse Rate max &nbsp;</h4></td>
-            <td rowspan="2" id="highValueId" class="well display-box"></td>
-            <td > <input class="btn-primary sm-button" value="+10" type="button" id="btnHighUpId"></a></td> 
+            <td rowspan="2"><h4 id="highLabelId" >Pulse Rate Max &nbsp;</h4></td>
+            <!-- <td rowspan="2" id="highValueId" class="well display-box"></td> -->
+            <td rowspan="2">
+                <label id="highValueId" class="display-box"></label>
+            </td> 
+            <td><button class="btn-primary sm-button" id="btnHighUpId">
+                <!-- up arrow with +10 <i class="glyphicon glyphicon-triangle-top"></i><i class="helvetica14">&nbsp+10</i></button> -->
+                <!-- no arrow -10 <td><button class="btn-primary sm-button" id="btnLowDownId">&ndash;10</td> -->
+                <!-- uparrow no text --> <i class="glyphicon glyphicon-triangle-top"></i>
+            </td>
         </tr>
         <tr>
-            <td > <input class="btn-primary sm-button" value="&ndash;10" type="button" id="btnHighDownId"></a></td>
+            <td ><button class="btn-primary sm-button" id="btnHighDownId">
+                <i class="glyphicon glyphicon-triangle-bottom"></i>
+            </td>
         </tr>
         <tr><td>&nbsp;</td></tr>
-        <tr><td>&nbsp;</td></tr>
         <tr>
-        <td rowspan="2"><h4 id="highLabelId">Pulse Rate min &nbsp;</h4></td>
-        <td rowspan="2" id="lowValueId" class="well display-box"></td>
-            <td> <input class="btn-primary sm-button" value="+10" type="button" id="btnLowUpId"></a></td>
+            <td rowspan="2"><h4 id="lowLabelId">Pulse Rate Min &nbsp;</h4></td>
+            <td rowspan="2" >
+                <label id="lowValueId" class="display-box"></label>
+            </td>
+            <td> <button class="btn-primary sm-button" id="btnLowUpId">
+                <i class="glyphicon glyphicon-triangle-top"></i>
+            </td>
         </tr>
         <tr>
-            <td><input class="btn-primary sm-button" value="&ndash;10" type="button" id="btnLowDownId"></a></td>
+            <td><button class="btn-primary sm-button" id="btnLowDownId">
+                <i class="glyphicon glyphicon-triangle-bottom"></i>
+            </td>
         </tr>
     </tbody>
     </table>
@@ -105,7 +119,6 @@
         // Setup scenario and start heartbeat info
         rti.pulseapp.setupScenario();
         rti.pulseapp.run();
-
         })();
     </script>
 </body>
