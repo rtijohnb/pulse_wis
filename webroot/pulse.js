@@ -9,8 +9,6 @@
  * use or inability to use the software.
  */
 
-
-
 var rti = rti || {};
 /**
  * @namespace rti.pulse
@@ -248,6 +246,20 @@ rti.pulseapp = {
                     }
                 }
             );
+
+        }, rti.pulseapp.BROWSER_UPDATE_RATE_MS);
+
+        setInterval(function(){   // runs once per second
+            // Alarm flash
+            if (rti.pulseapp.alarm) {
+                $('#heartbeatValue').css("color", "red");
+                $("#heartbeatValue").fadeOut(450).fadeIn(450);
+            } else {
+                $("#heartbeatValue").fadeIn(450);    // ensure it's faded back in!                    
+                $('#heartbeatValue').css("color", "orange");
+                $("#heartbeatValue").stop(true, true).finish();
+            }
+
             // Also update the PatientConfig value
             $.getJSON(
                 configURL,
@@ -260,17 +272,7 @@ rti.pulseapp = {
                     }
                 }
             );
-        }, rti.pulseapp.BROWSER_UPDATE_RATE_MS);
 
-        setInterval(function(){   // Alarm Flash
-            if (rti.pulseapp.alarm) {
-                $('#heartbeatValue').css("color", "red");
-                $("#heartbeatValue").fadeOut(450).fadeIn(450);
-            } else {
-                $("#heartbeatValue").fadeIn(450);    // ensure it's faded back in!                    
-                $('#heartbeatValue').css("color", "orange");
-                $("#heartbeatValue").stop(true, true).finish();
-            }
         }, 1000);
     },
   
@@ -405,7 +407,6 @@ rti.pulseapp = {
           dataType:"json",
           success: function(param){
           // console.log("sent " + configDataJSON);
-		 
           }
         });
     }, 
