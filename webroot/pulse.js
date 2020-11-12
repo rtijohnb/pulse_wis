@@ -216,7 +216,7 @@ rti.pulseapp = {
     }, 
     
     updatePatientInfo(sample) {
-        // console.log(data);
+        //console.log(sample);
         let name = `${sample.data.FirstName} ${sample.data.LastName}     Age: ${sample.data.Age}  ID: ${sample.data.Id}`;
         this.chartConfig.options.scales.xAxes[0].scaleLabel.labelString = name;
             //console.log('updatePatientInfo: ' + sample.data.Id);
@@ -291,7 +291,9 @@ rti.pulseapp = {
         // lineChart.config.data.datasets[0].backgroundColor="rgb(255, 99, 132)";
     
         // console.log ("Sample seq len: ", sampleSeq.length)
-        rti.pulseapp.fillChartLine(rti.pulseapp.X_POINT_COUNT- (sampleSeq.length * sampleSeq[0].data.readings.length), true);
+        if (sampleSeq.length !=0) {
+            rti.pulseapp.fillChartLine(rti.pulseapp.X_POINT_COUNT- (sampleSeq.length * sampleSeq[0].data.readings.length), true);
+        }
 
         sampleSeq.forEach(function(sample, i, samples) {
             // Process metadata
