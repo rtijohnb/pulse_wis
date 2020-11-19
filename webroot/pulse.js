@@ -16,7 +16,7 @@ var rti = rti || {};
 rti.pulseapp = {
     X_POINT_COUNT: 1000,
     BROWSER_UPDATE_RATE_MS: 65,   
-    patientId: "pid123",
+    patientId: "na",
     patientConfig: {
         high: 90, 
         low: 50,
@@ -37,19 +37,16 @@ rti.pulseapp = {
     getTotalSampleCount: function() { return this.counts.totalSampleCount; },
     setSampleCount: function(n) { this.counts.sampleCount = n; this.counts.totalSampleCount += n; return this.counts.sampleCount; },
 
-    getPatientId: function() { return this.patientId;},
-    setPatientId: function(id) { this.patientId = id; },
-
     fillChartLine: function(points, shift) {
         // console.log(points);
         for (var i=0; i< points; i++){
-        // prefill the chart withnominal data (autoscales)
-        if (shift) {
-          rti.pulseapp.chartConfig.data.datasets[0].data.shift();
-          rti.pulseapp.chartConfig.data.labels.shift();
-        }
-        rti.pulseapp.chartConfig.data.labels.push('0:00');
-        rti.pulseapp.chartConfig.data.datasets[0].data.push(500);
+          // prefill the chart withnominal data (autoscales)
+          if (shift) {
+            rti.pulseapp.chartConfig.data.datasets[0].data.shift();
+            rti.pulseapp.chartConfig.data.labels.shift();
+          }
+          rti.pulseapp.chartConfig.data.labels.push('0:00');
+          rti.pulseapp.chartConfig.data.datasets[0].data.push(500);
         }
     },
 
@@ -307,7 +304,6 @@ rti.pulseapp = {
             var instance_state  = info.instance_state;
             var reception_time  = info.source_timestamp;
             var error_str = "no error";
-            //var averageReading;
             rti.pulseapp.setSampleCount(sample.data.readings.length);
 
             // log if we get a sample out of sequence - note between sample sequences since we often re-read 
@@ -322,7 +318,7 @@ rti.pulseapp = {
             // If we received an invalid data sample, and the instance state
             // is != ALIVE, then the instance has been either disposed or
             // unregistered and we ignore the sample.
-            if (valid_data && (instance_state == "ALIVE")) {  //&& 
+            if (valid_data && (instance_state === "ALIVE")) {  //&& 
                 //(sample.data.timestamp > rti.pulseapp.prevSampleTimestamp)) {
                     rti.pulseapp.prevSampleTimestamp = sample.data.timestamp;
                     // console.log(sample.data.timestamp);
@@ -348,7 +344,7 @@ rti.pulseapp = {
                     var value = sample.data.bpm;
                     var elementHb = document.getElementById("heartbeatValue");
                     elementHb.innerHTML = value;
-                    // local alaarm of bmp (not DDS as one - alarms should come from central control)
+                    // local alarm of bmp (not DDS as one - alarms should come from central control)
                     //console.log(value, rti.pulseapp.patientConfig.high);
                     if (!rti.pulseapp.alarm && ((value >= rti.pulseapp.patientConfig.high) || (value <= rti.pulseapp.patientConfig.low))) {
                         rti.pulseapp.alarm=true;
@@ -376,10 +372,11 @@ rti.pulseapp = {
         $("#highValueId").prop("innerHTML", high);
         $("#lowValueId").prop("innerHTML", low);
 
-        if (high >= 200)
-         $('#btnHighUpId').addClass('disabled');
-        else
-         $('#btnHighUpId').removeClass('disabled');
+        if (high >= 200) {
+          $('#btnHighUpId').addClass('disabled');
+	} else {
+          $('#btnHighUpId').removeClass('disabled');
+	}
 
         $('#btnHighUpId').prop("disabled", high >= 200);
         $('#btnHighDownId').prop("disabled", high <= rti.pulseapp.patientConfig.low+10);
