@@ -22,36 +22,23 @@
     <web_integration_service name="PulseWis">
         <application name="PulseWisApp">
 
-            <domain_participant name="PulseWisParticipant" domain_id="20">
+            <domain_participant name="PulseWisParticipant" domain_id="0">
                 <!--
                 <participant_qos base_name="RTI_Eval_Qos_Library_1_0::Base_Participant_QoS" />
                 -->
                 <participant_qos>
-                    <participant_name>
-                        <name>PulseWisParticipant</name>
-                        <role_name>PulseWisParticipantRole</role_name>
-                    </participant_name> 
-                    <property> 
-                        <value> 
-                            <element> 
-                                <name>rti.monitor.library</name> 
-                                <value>rtimonitoring</value> 
-                            </element> 
-                            <element> 
-                                <name>rti.monitor.create_function</name> 
-                                <value>RTIDefaultMonitor_create</value> 
-                            </element> 
-                        </value> 
-                    </property> 
                 </participant_qos>
+
                 <register_type name="PatientPulse" type_ref="PatientPulse" />
                 <register_type name="PatientInfo" type_ref="PatientInfo" />
                 <register_type name="PatientConfig" type_ref="PatientConfig" />
+
                 <topic name="PatientInfoTopic" register_type_ref="PatientInfo" />
                 <topic name="PatientPulseTopic" register_type_ref="PatientPulse"/>
                 <topic name="PatientConfigTopic" register_type_ref="PatientConfig" />
 
                 <subscriber name="PulseWisSubscriber">
+
                     <data_reader name="PatientPulseReader" topic_ref="PatientPulseTopic">
                         <datareader_qos>
                             <reliability>
@@ -72,14 +59,18 @@
                             </reliability>
                             <history>
                                 <kind>KEEP_LAST_HISTORY_QOS</kind>
-                                <depth>2</depth>
+                                <depth>100</depth>
                             </history>
                         <!-- !!!ToDo: update as required -->
                         </datareader_qos>
                     </data_reader>
-                  <data_reader name="PatientConfigReader" topic_ref="PatientConfigTopic"/> 
+
+                    <data_reader name="PatientConfigReader" topic_ref="PatientConfigTopic"/> 
+
                 </subscriber>
+
                 <publisher name="PulseWisPublisher">
+
                     <data_writer name="PatientConfigWriter" topic_ref="PatientConfigTopic">
                         <datawriter_qos>
                             <reliability>
@@ -91,9 +82,12 @@
                             </history>
                             <!-- !!!ToDo: update as required -->
                         </datawriter_qos>
- 		   </data_writer>
+					</data_writer>
+
                 </publisher>
+
             </domain_participant>
         </application>
     </web_integration_service>
+
 </dds>

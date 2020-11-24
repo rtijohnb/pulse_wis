@@ -9,16 +9,14 @@
  * use or inability to use the software.
  */
 
-
-
 var rti = rti || {};
 /**
  * @namespace rti.pulse
  */
 rti.pulseapp = {
     X_POINT_COUNT: 1000,
-    BROWSER_UPDATE_RATE_MS: 100,   
-    patientId: "pid123",
+    BROWSER_UPDATE_RATE_MS: 65,   
+    patientId: "na",
     patientConfig: {
         high: 90, 
         low: 50,
@@ -39,8 +37,18 @@ rti.pulseapp = {
     getTotalSampleCount: function() { return this.counts.totalSampleCount; },
     setSampleCount: function(n) { this.counts.sampleCount = n; this.counts.totalSampleCount += n; return this.counts.sampleCount; },
 
-    getPatientId: function() { return this.patientId;},
-    setPatientId: function(id) { this.patientId = id; },
+    fillChartLine: function(points, shift) {
+        // console.log(points);
+        for (var i=0; i< points; i++){
+          // prefill the chart withnominal data (autoscales)
+          if (shift) {
+            rti.pulseapp.chartConfig.data.datasets[0].data.shift();
+            rti.pulseapp.chartConfig.data.labels.shift();
+          }
+          rti.pulseapp.chartConfig.data.labels.push('0:00');
+          rti.pulseapp.chartConfig.data.datasets[0].data.push(500);
+        }
+    },
 
     getBaseURL: function(is_pub) {
       var app = "/dds/rest1/applications/PulseWisApp";
@@ -131,11 +139,7 @@ rti.pulseapp = {
         context = document.getElementById('canvas').getContext('2d');
         this.lineChart = new Chart(context, this.chartConfig);
 
-        for (i=0; i< this.X_POINT_COUNT; i++){
-            // prefill the chart with gray nominal data (autoscales)
-            this.chartConfig.data.labels.push('0:00');
-            this.chartConfig.data.datasets[0].data.push(500);
-        };
+        this.fillChartLine(this.X_POINT_COUNT, false);
         //this.lineChart.update();
 
         /* Button handlers  */
@@ -209,11 +213,11 @@ rti.pulseapp = {
     }, 
     
     updatePatientInfo(sample) {
-        // console.log(data);
-        let name = `${sample.data.FirstName} ${sample.data.LastName}     Age: ${sample.data.Age}  ID: ${sample.data.Id}`;
+        //console.log(sample.data.Id.Id);
+        let name = `${sample.data.FirstName} ${sample.data.LastName}     Age: ${sample.data.Age}  ID: ${sample.data.Id.Id}`;
         this.chartConfig.options.scales.xAxes[0].scaleLabel.labelString = name;
             //console.log('updatePatientInfo: ' + sample.data.Id);
-        this.patientId = sample.data.Id;
+        this.patientId = sample.data.Id.Id;
     },
     /**
      *  The method will call the methods that update the display at 33 ms intervals.
@@ -239,6 +243,20 @@ rti.pulseapp = {
                     }
                 }
             );
+
+        }, rti.pulseapp.BROWSER_UPDATE_RATE_MS);
+
+        setInterval(function(){   // runs once per second
+            // Alarm flash
+            if (rti.pulseapp.alarm) {
+                $('#heartbeatValue').css("color", "red");
+                $("#heartbeatValue").fadeOut(450).fadeIn(450);
+            } else {
+                $("#heartbeatValue").fadeIn(450);    // ensure it's faded back in!                    
+                $('#heartbeatValue').css("color", "orange");
+                $("#heartbeatValue").stop(true, true).finish();
+            }
+
             // Also update the PatientConfig value
             $.getJSON(
                 configURL,
@@ -251,16 +269,7 @@ rti.pulseapp = {
                     }
                 }
             );
-        }, rti.pulseapp.BROWSER_UPDATE_RATE_MS);
 
-        setInterval(function(){   // Alarm Flash
-            if (rti.pulseapp.alarm) {
-                $('#heartbeatValue').css("color", "red");
-                $("#heartbeatValue").fadeOut(450).fadeIn(450);
-            } else {                        
-                $('#heartbeatValue').css("color", "orange");
-                $("#heartbeatValue").stop(true, true).finish();
-            }
         }, 1000);
     },
   
@@ -279,7 +288,10 @@ rti.pulseapp = {
         // lineChart.config.data.datasets[0].backgroundColor="rgb(255, 99, 132)";
     
         // console.log ("Sample seq len: ", sampleSeq.length)
-        //if (sampleSeq.length == 100) {
+        if (sampleSeq.length !=0) {
+            rti.pulseapp.fillChartLine(rti.pulseapp.X_POINT_COUNT- (sampleSeq.length * sampleSeq[0].data.readings.length), true);
+        }
+
         sampleSeq.forEach(function(sample, i, samples) {
             // Process metadata
             
@@ -292,20 +304,21 @@ rti.pulseapp = {
             var instance_state  = info.instance_state;
             var reception_time  = info.source_timestamp;
             var error_str = "no error";
-            //var averageReading;
             rti.pulseapp.setSampleCount(sample.data.readings.length);
 
-            //console.log("sample received:", reception_time);
-            // If we received an invalid data sample, and the instance state
-            // is != ALIVE, then the instance has been either disposed or
-            // unregistered and we ignore the sample.
-
+            // log if we get a sample out of sequence - note between sample sequences since we often re-read 
+            // the WIS reader cache = prev sample sequence number will be 99 or 100 less than the timestamp
+            // number in the first sample of the sequence. - then it falls into line.
             if (sample.data.timestamp > rti.pulseapp.prevSampleTimestamp+1) {
                 (i==0) ? error_str = "between sample sets" : error_str = "Inside sample set";
                 console.log("Lost packet " + error_str + " @Seqence: " + i + 
                 " Timestamps: " + sample.data.timestamp + " " + rti.pulseapp.prevSampleTimestamp);
             }
-            if (valid_data && (instance_state == "ALIVE")) {  //&& 
+
+            // If we received an invalid data sample, and the instance state
+            // is != ALIVE, then the instance has been either disposed or
+            // unregistered and we ignore the sample.
+            if (valid_data && (instance_state === "ALIVE")) {  //&& 
                 //(sample.data.timestamp > rti.pulseapp.prevSampleTimestamp)) {
                     rti.pulseapp.prevSampleTimestamp = sample.data.timestamp;
                     // console.log(sample.data.timestamp);
@@ -331,7 +344,7 @@ rti.pulseapp = {
                     var value = sample.data.bpm;
                     var elementHb = document.getElementById("heartbeatValue");
                     elementHb.innerHTML = value;
-                    // local alaarm of bmp (not DDS as one - alarms should come from central control)
+                    // local alarm of bmp (not DDS as one - alarms should come from central control)
                     //console.log(value, rti.pulseapp.patientConfig.high);
                     if (!rti.pulseapp.alarm && ((value >= rti.pulseapp.patientConfig.high) || (value <= rti.pulseapp.patientConfig.low))) {
                         rti.pulseapp.alarm=true;
@@ -359,10 +372,11 @@ rti.pulseapp = {
         $("#highValueId").prop("innerHTML", high);
         $("#lowValueId").prop("innerHTML", low);
 
-        if (high >= 200)
-         $('#btnHighUpId').addClass('disabled');
-        else
-         $('#btnHighUpId').removeClass('disabled');
+        if (high >= 200) {
+          $('#btnHighUpId').addClass('disabled');
+	} else {
+          $('#btnHighUpId').removeClass('disabled');
+	}
 
         $('#btnHighUpId').prop("disabled", high >= 200);
         $('#btnHighDownId').prop("disabled", high <= rti.pulseapp.patientConfig.low+10);
@@ -376,7 +390,7 @@ rti.pulseapp = {
     writePatientConfig: function(highValue, lowValue) {
         const configURL = this.getPatientConfigWriterURL();
         var configData = { 
-            Id: this.patientId.toString(), 
+            Id: {Id: this.patientId.toString()}, 
             PulseHighThreshold: highValue,
             PulseLowThreshold: lowValue,
         };
@@ -392,7 +406,6 @@ rti.pulseapp = {
           dataType:"json",
           success: function(param){
           // console.log("sent " + configDataJSON);
-		 
           }
         });
     }, 

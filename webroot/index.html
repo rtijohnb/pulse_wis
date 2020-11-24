@@ -5,26 +5,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description"
-    content="Simple web subscriber application for Heartbeat demo">
+          content="Simple web application for Heartbeat demo">
     <meta name="author" content="Real-Time Innovations, Inc.">
 
     <title>Pulse Demo Application</title>
 
+    <!-- using cdn links for their local cache speed.  A snapshot copy can be found in the resources directory if the online versions vanish.-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" integrity="sha512-/zs32ZEJh+/EO2N1b0PEdoA10JkdC3zJ8L5FTiQu82LR9S/rOQNfQN7U59U9BC12swNeRAz3HSzIL2vpp4fv3w==" crossorigin="anonymous" rel="stylesheet" />
+
+    <!-- local resource image + css files -->
     <link href="/resources/img/favicon.ico" rel="icon" type="image/x-icon">
     <link href="/resources/css/main.css" rel="stylesheet" type="text/css">
-    <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg==" crossorigin="anonymous"></script>
+    <!-- cdn links for javascript -->
     <script src="/resources/js/jquery-1.12.3.min.js"></script>
-    <script src="/resources/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg==" crossorigin="anonymous"></script>
+
+    <!-- local javascript -->
     <script src="/pulse.js"></script>
-    </head>
+</head>
 
 <body id="body" style="background-color:#cccccc"> 
-    <!-- 2x3 Table holds Rti logo, blank, Heartbeat
-                        blank     blank, Heartrate
-    -->
+    <!-- Table holds Rti logo, Heartbeat icon, Label, value, units -->
     <table width=100% style="margin-left:auto;margin-right:auto">
         <tr>
             <td style="width:2%; background-color:black"></td>
@@ -79,24 +83,37 @@
     <table class="center">
     <tbody>
         <tr>
-            <td class="tg-label" rowspan="2"><h3 id="highLabelId">Pulse Rate max &nbsp;</h3></td>
-            <td class="tg-value" rowspan="2"><button id="highValueId" style="width:80px" class="btn-lg btn-outline-secondary">&nbsp;&nbsp;&nbsp;</button></td>
-            <!--<td class="tg-value" rowspan="2"><h1 id="highValueId">&nbsp;&nbsp;&nbsp;</h1> /button> -->
-            <td class="tg-btn"> <input class="btn-primary" value="+10" type="button" id="btnHighUpId"></a></td>
-          </tr>
-          <tr>
-              <td class="tg-btn"> <input class="btn-primary" value="&ndash;10" type="button" id="btnHighDownId"></a></td>
-          </tr>
-          <tr><td>&nbsp;</td></tr>
-          <tr><td>&nbsp;</td></tr>
-          <tr>
-            <td class="tg-label" rowspan="2"><h3 id="highLabelId">Pulse Rate min &nbsp;</h3></td>
-            <td class="tg-value" rowspan="2"><button id="lowValueId" style="width:80px" class="btn-lg btn-outline-secondary">&nbsp;&nbsp;&nbsp;</button> </td>
-                <td> <input class="btn-primary tg-btn" value="+10" type="button" id="btnLowUpId"></a></td>
-          </tr>
-          <tr>
-              <td><input class="tg-btn btn-primary" value="&ndash;10" type="button" id="btnLowDownId"></a></td>
-          </tr>
+            <td rowspan="2"><h4 id="highLabelId" >Pulse Rate Max &nbsp;</h4></td>
+            <!-- <td rowspan="2" id="highValueId" class="well display-box"></td> -->
+            <td rowspan="2">
+                <label id="highValueId" class="display-box"></label>
+            </td> 
+            <td><button class="btn-primary sm-button" id="btnHighUpId">
+                <!-- up arrow with +10 <i class="glyphicon glyphicon-triangle-top"></i><i class="helvetica14">&nbsp+10</i></button> -->
+                <!-- no arrow -10 <td><button class="btn-primary sm-button" id="btnLowDownId">&ndash;10</td> -->
+                <!-- uparrow no text --> <i class="glyphicon glyphicon-triangle-top"></i>
+            </td>
+        </tr>
+        <tr>
+            <td ><button class="btn-primary sm-button" id="btnHighDownId">
+                <i class="glyphicon glyphicon-triangle-bottom"></i>
+            </td>
+        </tr>
+        <tr><td>&nbsp;</td></tr>
+        <tr>
+            <td rowspan="2"><h4 id="lowLabelId">Pulse Rate Min &nbsp;</h4></td>
+            <td rowspan="2" >
+                <label id="lowValueId" class="display-box"></label>
+            </td>
+            <td> <button class="btn-primary sm-button" id="btnLowUpId">
+                <i class="glyphicon glyphicon-triangle-top"></i>
+            </td>
+        </tr>
+        <tr>
+            <td><button class="btn-primary sm-button" id="btnLowDownId">
+                <i class="glyphicon glyphicon-triangle-bottom"></i>
+            </td>
+        </tr>
     </tbody>
     </table>
 
@@ -106,7 +123,6 @@
         // Setup scenario and start heartbeat info
         rti.pulseapp.setupScenario();
         rti.pulseapp.run();
-
         })();
     </script>
 </body>
