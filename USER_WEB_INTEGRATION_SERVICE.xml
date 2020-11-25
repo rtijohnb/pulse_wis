@@ -73,10 +73,14 @@
 		of the types in that file.  SO the following types were peeled out of the System Designer
 		configuration file, de-modulified them and stored in "MedicalDemoTypes.xml" file for
 		configuring type information for this WIS instance...
-    -->
     <types>
         <include file="MedicalDemoTypes.xml" />
 	</types>
+    -->
+    <!--
+        Attempting to bring in types definitions via MedicalDemo.xml via use of the environment
+		variable NDDS_QOS_PROFILES.  i.e. on windows machine "set NDDS_QOS_PROFILES=file://c:/..."
+    -->
 
     <!--
         Configuration for the Pulse Demo WIS instance.
@@ -91,9 +95,9 @@
 
                 <participant_qos base_name="PulseWisQosLib::PulseWisBaseQos::PulseWisParticipant" />
 
-                <register_type name="PatientPulse" type_ref="PatientPulse" />
-                <register_type name="PatientInfo" type_ref="PatientInfo" />
-                <register_type name="PatientConfig" type_ref="PatientConfig" />
+                <register_type name="PatientPulse" type_ref="RTI::PATIENT::PatientPulse" />
+                <register_type name="PatientInfo" type_ref="RTI::PATIENT::PatientInfo" />
+                <register_type name="PatientConfig" type_ref="RTI::PATIENT::PatientConfig" />
 
                 <topic name="PatientInfoTopic" register_type_ref="PatientInfo" />
                 <topic name="PatientPulseTopic" register_type_ref="PatientPulse"/>
@@ -139,9 +143,10 @@
 
                 <participant_qos base_name="PulseWisQosLib::PulseWisMonQos::PulseWisMonParticipant" />
 
-                <register_type name="PatientPulse" type_ref="PatientPulse" />
-                <register_type name="PatientInfo" type_ref="PatientInfo" />
-                <register_type name="PatientConfig" type_ref="PatientConfig" />
+                <register_type name="PatientPulse" type_ref="RTI::PATIENT::PatientPulse" />
+                <register_type name="PatientInfo" type_ref="RTI::PATIENT::PatientInfo" />
+                <register_type name="PatientConfig" type_ref="RTI::PATIENT::PatientConfig" />
+
                 <topic name="PatientInfoTopic" register_type_ref="PatientInfo" />
                 <topic name="PatientPulseTopic" register_type_ref="PatientPulse"/>
                 <topic name="PatientConfigTopic" register_type_ref="PatientConfig" />
