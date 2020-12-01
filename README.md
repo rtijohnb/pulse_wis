@@ -22,14 +22,13 @@ USER_WEB_INTEGRATION_SERVICE.xml - configuration for the WIS instance described 
 
 Two environment variables must be set appropriately for this service to run correctly, as follows:
 
-NDDSHOME: must be set to the location where connext is installed in the host environment.
+NDDSHOME: must be set to the name of the directory where connext is installed in the host environment.
 e.g. for linux: export NDDSHOME=/home/kenm/rti_connext_dds-6.0.1
 e.g. for Windows: setx NDDSHOME C:\RTI\rti_connext_dds-6.0.1 /m
 
-PULSE_DEMO_HOME: must be set to the directory name where the pulse repositories have been cloned in.
+PULSE_DEMO_HOME: must be set to the name of the directory where the pulse repositories have been cloned in.
 e.g. for linux: export PULSE_DEMO_HOME=/home/kenm/repos/Pulse
 e.g. for Windows: setx PULSE_DEMO_HOME C:\users\kenm\repos\Pulse /m
-
 
 Two script files have been placed in this directory to simplify running the WIS in various environments
 as follows:
