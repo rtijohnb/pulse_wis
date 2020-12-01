@@ -15,18 +15,21 @@ setting the NDDS_QOS_PROFILES to point to that file.
 
 http://50.18.214.8:8090/
 
-Several script files have been placed in this directory to simplify running the WIS instance.
-In all cases, these scripts assume that the environment variable NDDSHOME is set appropriately for
-the host.
-
-Configuration file is as follows:
+Several script files have been placed in this directory to simplify running the WIS instance.  Configuration
+of the WIS session is stored in the following file:
 
 USER_WEB_INTEGRATION_SERVICE.xml - configuration for the WIS instance described above.
 
 Two environment variables must be set appropriately for this service to run correctly, as follows:
 
 NDDSHOME: must be set to the location where connext is installed in the host environment.
+e.g. for linux: export NDDSHOME=/home/kenm/rti_connext_dds-6.0.1
+e.g. for Windows: setx NDDSHOME C:\RTI\rti_connext_dds-6.0.1 /m
+
 PULSE_DEMO_HOME: must be set to the directory name where the pulse repositories have been cloned in.
+e.g. for linux: export PULSE_DEMO_HOME=/home/kenm/repos/Pulse
+e.g. for Windows: setx PULSE_DEMO_HOME C:\users\kenm\repos\Pulse /m
+
 
 Two script files have been placed in this directory to simplify running the WIS in various environments
 as follows:
