@@ -2,86 +2,6 @@
 <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/6.0.1/6.0.0/rti_web_integration_service.xsd">
 
-    <qos_library name="PulseWisQosLib">
-	    <qos_profile name="PulseWisBaseQos">
-
-            <participant_qos name="PulseWisParticipant">
-                <participant_name>
-                    <name>PulseWisParticipant</name>
-                    <role_name>PulseWisParticipantRole</role_name>
-                </participant_name>  
-            </participant_qos>
-
-            <datareader_qos name="PulseTopicReaderQoS">
-                <reliability>
-                    <kind>RELIABLE_RELIABILITY_QOS</kind>
-                </reliability>
-                <history>
-                    <kind>KEEP_LAST_HISTORY_QOS</kind>
-                    <depth>100</depth>
-                </history>
-                <!-- !!!ToDo: update as required -->
-            </datareader_qos>
-
-            <datareader_qos name="PulseInfoReaderQoS">
-                <reliability>
-                    <kind>RELIABLE_RELIABILITY_QOS</kind>
-                </reliability>
-                <history>
-                    <kind>KEEP_LAST_HISTORY_QOS</kind>
-                    <depth>2</depth>
-                </history>
-                <!-- !!!ToDo: update as required -->
-            </datareader_qos>
-
-            <datawriter_qos name="PulseConfigWriterQoS">
-                <reliability>
-                    <kind>RELIABLE_RELIABILITY_QOS</kind>
-                </reliability>
-                <history>
-                    <kind>KEEP_LAST_HISTORY_QOS</kind>
-                    <depth>5</depth>
-                </history>
-                <!-- !!!ToDo: update as required -->
-            </datawriter_qos>
-
-        </qos_profile>
-
-	    <qos_profile name="PulseWisMonQos" base_name="PulseWisBaseQos">
-
-            <participant_qos name="PulseWisMonParticipant">
-                <property> 
-                    <value> 
-                        <element> 
-                            <name>rti.monitor.library</name> 
-                            <value>rtimonitoring</value> 
-                        </element> 
-                        <element> 
-                            <name>rti.monitor.create_function</name> 
-                            <value>RTIDefaultMonitor_create</value> 
-                        </element> 
-                    </value> 
-                </property> 
-            </participant_qos>
-
-        </qos_profile>
-	</qos_library>
-	
-    <!--
-        Note that WIS doesn't like including the system designer config file directly, and
-		didn't like the "module" definitions, or the references that stem from the modul-ization
-		of the types in that file.  SO the following types were peeled out of the System Designer
-		configuration file, de-modulified them and stored in "MedicalDemoTypes.xml" file for
-		configuring type information for this WIS instance...
-    <types>
-        <include file="MedicalDemoTypes.xml" />
-	</types>
-    -->
-    <!--
-        Attempting to bring in types definitions via MedicalDemo.xml via use of the environment
-		variable NDDS_QOS_PROFILES.  i.e. on windows machine "set NDDS_QOS_PROFILES=file://c:/..."
-    -->
-
     <!--
         Configuration for the Pulse Demo WIS instance.
 		This assumes that the QoS from the system designer config is peeled out and stored
@@ -93,7 +13,7 @@
 
             <domain_participant name="PulseWisParticipant" domain_id="20">
 
-                <participant_qos base_name="PulseWisQosLib::PulseWisBaseQos::PulseWisParticipant" />
+                <participant_qos base_name="RTI_Eval_Qos_Library_1_0::PulseWisBaseQos::PulseWisParticipant" />
 
                 <register_type name="PatientPulse" type_ref="RTI::PATIENT::PatientPulse" />
                 <register_type name="PatientInfo" type_ref="RTI::PATIENT::PatientInfo" />
@@ -106,11 +26,11 @@
                 <subscriber name="PulseWisSubscriber">
 
                     <data_reader name="PatientPulseReader" topic_ref="PatientPulseTopic">
-                        <datareader_qos base_name="PulseWisQosLib::PulseWisBaseQos::PulseTopicReaderQoS"/>
+                        <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::PulseWisBaseQos::PulseTopicReaderQoS"/>
                     </data_reader>
 
                     <data_reader name="PatientInfoReader" topic_ref="PatientInfoTopic">
-                        <datareader_qos base_name="PulseWisQosLib::PulseWisBaseQos::PulseInfoReaderQoS"/>
+                        <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::PulseWisBaseQos::PulseInfoReaderQoS"/>
                     </data_reader>
 
                     <data_reader name="PatientConfigReader" topic_ref="PatientConfigTopic"/> 
@@ -120,7 +40,7 @@
                 <publisher name="PulseWisPublisher">
 
                     <data_writer name="PatientConfigWriter" topic_ref="PatientConfigTopic">
-                        <datawriter_qos base_name="PulseWisQosLib::PulseWisBaseQos::PulseConfigWriterQoS"/>
+                        <datawriter_qos base_name="RTI_Eval_Qos_Library_1_0::PulseWisBaseQos::PulseConfigWriterQoS"/>
 					</data_writer>
 
                 </publisher>
@@ -141,7 +61,7 @@
 
             <domain_participant name="PulseWisParticipant" domain_id="20">
 
-                <participant_qos base_name="PulseWisQosLib::PulseWisMonQos::PulseWisMonParticipant" />
+                <participant_qos base_name="RTI_Eval_Qos_Library_1_0::PulseWisMonQos::PulseWisMonParticipant" />
 
                 <register_type name="PatientPulse" type_ref="RTI::PATIENT::PatientPulse" />
                 <register_type name="PatientInfo" type_ref="RTI::PATIENT::PatientInfo" />
@@ -153,17 +73,17 @@
 
                 <subscriber name="PulseWisSubscriber">
                     <data_reader name="PatientPulseReader" topic_ref="PatientPulseTopic">
-                        <datareader_qos base_name="PulseWisQosLib::PulseWisBaseQos::PulseTopicReaderQoS"/>
+                        <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::PulseWisBaseQos::PulseTopicReaderQoS"/>
                     </data_reader>
 
                     <data_reader name="PatientInfoReader" topic_ref="PatientInfoTopic">
-                        <datareader_qos base_name="PulseWisQosLib::PulseWisBaseQos::PulseInfoReaderQoS"/>
+                        <datareader_qos base_name="RTI_Eval_Qos_Library_1_0::PulseWisBaseQos::PulseInfoReaderQoS"/>
                     </data_reader>
                   <data_reader name="PatientConfigReader" topic_ref="PatientConfigTopic"/> 
                 </subscriber>
                 <publisher name="PulseWisPublisher">
                     <data_writer name="PatientConfigWriter" topic_ref="PatientConfigTopic">
-                        <datawriter_qos base_name="PulseWisQosLib::PulseWisBaseQos::PulseConfigWriterQoS"/>
+                        <datawriter_qos base_name="RTI_Eval_Qos_Library_1_0::PulseWisBaseQos::PulseConfigWriterQoS"/>
 					</data_writer>
 
                 </publisher>
