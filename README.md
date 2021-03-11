@@ -26,15 +26,16 @@ NDDSHOME: must be set to the name of the directory where connext is installed in
 e.g. for Linux: export NDDSHOME=$(HOME)/rti_connext_dds-6.0.1
 e.g. for Windows: setx NDDSHOME C:\PROGRA~1\rti_connext_dds-6.0.1 /m
 
-PULSE_DEMO_HOME: must be set to the name of the directory where the pulse repositories have been cloned in.
-e.g. for Linux: export PULSE_DEMO_HOME=$(HOME)/repos/Pulse
-e.g. for Windows: setx PULSE_DEMO_HOME %HOMEDRIVE%%HOMEPATH%\repos\Pulse /m
+PULSE_DEMO_HOME: must be set to the name of the directory where the pulse repositories have been cloned in. <br>
+e.g. for Linux: export PULSE_DEMO_HOME=$(HOME)/repos/Pulse<br>
+e.g. for Windows: setx PULSE_DEMO_HOME %HOMEDRIVE%%HOMEPATH%\repos\Pulse /m <br>
 
 Two script files have been placed in this directory to simplify running the WIS in various environments
-as follows:
+as follows: <br>
+"runPulseWis.sh" - script to start the WIS instance on a Linux host.<br>
+"runPulseWis.bat" - script to start the Pi WIS instance on a windows host.<br>
 
-"runPulseWis.sh" - script to start the WIS instance on a Linux host.
-"runPulseWis.bat" - script to start the Pi WIS instance on a windows host.
-
-to use any of the above scripts, place the relevant configuration file noted above in a directory, then
-make that your working directory, then run the appropriate script as described above to start the service.
+To use any of the above scripts, 
+1. place the relevant configuration file noted above in a directory
+1. make that your working directory
+1. run the appropriate script as described above to start the service
