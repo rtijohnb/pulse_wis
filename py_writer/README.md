@@ -5,4 +5,4 @@ A data generator for experimenting with rendering known data values.
 
 <br>
 It is a replacement for pulse playback or live pulse data just for testing.  <br>
-`writer.py` depends on rticonnextdds_connector available [here](https://github.com/rticommunity/rticonnextdds-connector-py)
+`writer.py` depends on rticonnextdds_connector available at: https://github.com/rticommunity/rticonnextdds-connector-py
