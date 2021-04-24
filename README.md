@@ -34,7 +34,8 @@ Two script files have been placed in this directory to simplify running the WIS 
 as follows:
 
 "linuxStartWis" - script that can be used to start the WIS instance on a linux host.
-"RunPulseWis.bat" - one-line script that can be used to start the Pi WIS instance on a windows host.
+"runPulseWis.bat" - one-line script that can be used to start the Pi WIS instance on a windows host.
+"runPulseWisWebSockets.bat" - start the WebSocket implementation (requires 6.1.0)
 
 to use any of the above scripts, place the relevant configuration file noted above in a directory, then
 make that your working directory, then run the appropriate script as described above to start the service.
