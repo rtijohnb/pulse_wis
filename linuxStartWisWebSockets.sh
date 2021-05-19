@@ -11,7 +11,7 @@ export NDDS_QOS_PROFILES=file://$PULSE_DEMO_HOME/pulse_sysdesigner/MedicalDemo.x
 # add this for debugging
 #  -verbosity 6 
 $NDDSHOME/bin/rtiwebintegrationservice \
-  -accessLogFile accessLogFile.txt ^
+  -accessLogFile accessLogFile.txt \
   -cfgName PulseWis \
   -enableKeepAlive yes \
   -listeningPorts 8090 \
