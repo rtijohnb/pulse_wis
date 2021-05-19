@@ -25,7 +25,7 @@
         <!-- Specify playback behavior -->
         <playback>
 			<!-- <rate>$(RATE)</rate> -->
-			<rate>1.9</rate>
+			<rate>1.0</rate>
             <enable_looping>true</enable_looping>
         </playback>
       

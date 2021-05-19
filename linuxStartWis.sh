@@ -1,3 +1,4 @@
+#!/bin/bash
 if [ 2 -eq `ps auxw|grep 'rtiwebintegrationservice.*8090'|wc -l` ];
 then
      echo "It looks like WIS is already running, try killing it first"
