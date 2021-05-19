@@ -33,7 +33,8 @@ e.g. for Windows: setx PULSE_DEMO_HOME C:\users\kenm\repos\Pulse /m
 Two script files have been placed in this directory to simplify running the WIS in various environments
 as follows:
 
-"linuxStartWis" - script that can be used to start the WIS instance on a linux host.
+"linuxStartWis.sh" - script that can be used to start the WIS instance on a linux host.
+"linuxStartWisWebSockets.sh" - script that can be used to start the WIS instance on a linux host using WebSockets (Requires 6.1.0).
 "runPulseWis.bat" - one-line script that can be used to start the Pi WIS instance on a windows host.
 "runPulseWisWebSockets.bat" - start the WebSocket implementation (requires 6.1.0)
 
