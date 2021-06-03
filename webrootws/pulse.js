@@ -196,27 +196,22 @@ rti.pulseapp = {
             } ]
         };
         rti.pulseapp.ws_pulse.send(JSON.stringify(bind_data_json));
-
-        var get_req_msg_json = {
-            "kind": "request",
-            "id": rti.pulseapp.BIND_PULSE_READER_ID,
-            "method": "GET",
-            "uri": pr_url
-        };
-        rti.pulseapp.ws_pulse.send(JSON.stringify(get_req_msg_json));
     },
     initWebSocket:function() {
         var url = "ws://" + window.location.host + "/dds/websocket/" + rti.pulseapp.PULSE_DATA_WS_NAME;
         console.log("ws_pulse: " +  url);
-        rti.pulseapp.ws_pulse = new WebSocket(url, ['omg-dds', 'dds-web', 'foo']);
+
+	// proves we can request an arbitrary protocol in this namespace
+        //rti.pulseapp.ws_pulse = new WebSocket(url, ['omg-dds', 'dds-web', 'foo']);
+        rti.pulseapp.ws_pulse = new WebSocket(url);
     
         rti.pulseapp.ws_pulse.onopen = function(ev) {
-            console.log("[open] Conn established");
+            console.log("[open] Conn established, protocol: ", rti.pulseapp.ws_pulse.protocol); // echos back the chosen protocol
             rti.pulseapp.ws_pulse.send(  // hello message
                 "Content-Type:application/dds-web+json\r\n" +
                 "Accept:application/dds-web+json\r\n" +
-                "OMG-DDS-API-Key: \r\n" +
-                "Version:1\r\n");
+                "OMG-DDS-API-Key: <andyk-api-key>\r\n" +
+                "Version:1\r\n\r");  // only Version=1 supported
             rti.pulseapp.bind();
         };
 
@@ -235,6 +230,7 @@ rti.pulseapp = {
         };
 
         rti.pulseapp.ws_pulse.onmessage = function(msg) {
+	try {
             if (!msg.data) {
                console.log("No data in msg");
             } else if (msg.data.includes("HELLO")) {
@@ -242,7 +238,11 @@ rti.pulseapp = {
             } else { // pushed data arrives here after websocket handshake is completed
                 var parsed = JSON.parse(msg.data);
                 //console.log(parsed);
-		console.log("bufAmt: " + rti.pulseapp.ws_pulse.bufferedAmount);
+
+		// if client isn't keeping up, bufferedAmount should show non-zero
+		if (rti.pulseapp.ws_pulse.bufferedAmount > 0) {
+                    console.log("bufAmt: " + rti.pulseapp.ws_pulse.bufferedAmount);
+		}
                 if (parsed.bind_id && parsed.bind_id == rti.pulseapp.BIND_PULSE_READER_ID) { 
                     // PROCESS the SAMPLE
                     rti.pulseapp.updateChart(parsed);
@@ -250,6 +250,10 @@ rti.pulseapp = {
                     console.log("No bind_id");
                 }
             }
+	} catch(err) {
+	    console.log("[onmsg] ERROR: ", err);
+	}
+
         };
     },
     initWebSocketREST: function() {
@@ -265,7 +269,7 @@ rti.pulseapp = {
           contentType:"application/dds-web+json",
           dataType:"json",
           success: function(param){
-             console.log("sent OK " + configDataJSON);
+             console.log("WebSocket enable" + configDataJSON);
           },
           failure: function(param){
               console.log("No WebSocket enable. Error: " + param.responseText);
@@ -276,6 +280,8 @@ rti.pulseapp = {
         rti.pulseapp.COUNT_ITEM = document.getElementById("countId");
         rti.pulseapp.HEARTBEAT_VALUE = document.getElementById("heartbeatValue");
         let url = this.getPatientInfoReaderURL();
+	// EARLY RETURN
+	return;
         $.getJSON(
             url,
             { sampleFormat:"json", removeFromReaderCache: "false"}, 
@@ -325,6 +331,9 @@ rti.pulseapp = {
      *  The run method will only update button activity; pulse data is pushed via websocket
      */
     run: function() {
+        console.log('run called, doing nothing');
+    },
+    runDISABLE: function() {
 
         var configURL = this.getPatientConfigReaderURL();
         setInterval(function(){   // runs once per second
