@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 import rticonnextdds_connector as rti
 from time import sleep
+import sys
 
+SLEEP = float(sys.argv[1]) if len(sys.argv) > 1 else 0.1
 with rti.open_connector("MyParticipantLibrary::MyPubParticipant", 'pulse.xml') as connector:
     output = connector.get_output("MyPublisher::MyPulseWriter")
 
@@ -21,7 +23,7 @@ with rti.open_connector("MyParticipantLibrary::MyPubParticipant", 'pulse.xml') a
 
         output.write()
         print(f"  wrote bpm: {bpm} ts: {i}")
-        sleep(0.1)
+        sleep(SLEEP)
 
     print("Exiting...")
     output.wait() # Wait for all subscriptions to receive the data before exiting
