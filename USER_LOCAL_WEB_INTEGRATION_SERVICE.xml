@@ -46,7 +46,7 @@
                             </reliability>
                             <history>
                                 <kind>KEEP_LAST_HISTORY_QOS</kind>
-                                <depth>100</depth>
+                                <depth>1000</depth>
                             </history>
                         <!-- !!!ToDo: update as required -->
                         </datareader_qos>
