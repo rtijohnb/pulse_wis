@@ -16,6 +16,7 @@ var rti = rti || {};
 rti.pulseapp = {
     X_POINT_COUNT: 1000,
     BROWSER_UPDATE_RATE_MS: 65,   
+    missed: [],
     patientId: "na",
     patientConfig: {
         high: 90, 
@@ -304,16 +305,24 @@ rti.pulseapp = {
             var instance_state  = info.instance_state;
             var reception_time  = info.source_timestamp;
             var error_str = "no error";
-            rti.pulseapp.setSampleCount(sample.data.readings.length);
+	    if (sample && sample.data && sample.data.readings) {
+                rti.pulseapp.setSampleCount(sample.data.readings.length);
+            } else {
+	        console.log(sample);
+	    }
 
             // log if we get a sample out of sequence - note between sample sequences since we often re-read 
             // the WIS reader cache = prev sample sequence number will be 99 or 100 less than the timestamp
             // number in the first sample of the sequence. - then it falls into line.
             if (sample.data.timestamp > rti.pulseapp.prevSampleTimestamp+1) {
+		rti.pulseapp.missed.push(rti.pulseapp.prevSampleTimestamp);
                 (i==0) ? error_str = "between sample sets" : error_str = "Inside sample set";
                 console.log("Lost packet " + error_str + " @Seqence: " + i + 
                 " Timestamps: " + sample.data.timestamp + " " + rti.pulseapp.prevSampleTimestamp);
             }
+	    if (sample.data.timestamp === 100) {
+                console.log("Missed:", rti.pulseapp.missed);
+	    }
 
             // If we received an invalid data sample, and the instance state
             // is != ALIVE, then the instance has been either disposed or
